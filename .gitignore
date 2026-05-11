@@ -75,5 +75,19 @@ output/exports/*
 .env.local
 *.local
 
-# Claude Code per-checkout settings
-.claude/settings.local.json
+# AI / assistant tool artifacts (kept local, not published)
+CLAUDE.md
+.claude/
+.cursor/
+.cursorrules
+.cursorignore
+.aider*
+.aiderignore
+.continue/
+.windsurf/
+.codeium/
+.github/copilot-instructions.md
+AGENTS.md
+GEMINI.md
+.zed/
+.idea/aiassistant/

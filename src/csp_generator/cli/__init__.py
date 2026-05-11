@@ -15,19 +15,19 @@ def main() -> None:
 
 @main.command()
 def generate() -> None:
-    """Generate candidate puzzles. (Stub — implemented in Week 3.)"""
+    """Generate candidate puzzles. (Coming soon.)"""
     click.echo("generate: not implemented yet")
 
 
 @main.command()
 def review() -> None:
-    """Interactively review candidate puzzles. (Stub — implemented in Week 5.)"""
+    """Interactively review candidate puzzles. (Coming soon.)"""
     click.echo("review: not implemented yet")
 
 
 @main.command()
 def export() -> None:
-    """Export approved puzzles to JSON. (Stub — implemented in Week 6.)"""
+    """Export approved puzzles to JSON. (Coming soon.)"""
     click.echo("export: not implemented yet")
 
 
