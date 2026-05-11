@@ -6,7 +6,7 @@ Built as the upstream tool for the Zebra daily-puzzle web app: produces uniquely
 
 ## Status
 
-Pre-development scaffolding. See the [6-week implementation plan](docs/IMPLEMENTATION_PLAN.md) (TBA) for milestones.
+Early development. The solver, clue system, generation pipeline, analytics, and review tooling are coming online incrementally.
 
 ## Why two solvers?
 
@@ -46,7 +46,7 @@ pytest
 
 ## Usage
 
-The CLI surface is built out across weeks 3–6. Once available:
+The full CLI surface is in progress. Planned commands:
 
 ```bash
 # Generate a batch of candidate puzzles
