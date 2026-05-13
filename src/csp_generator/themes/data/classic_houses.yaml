@@ -1,0 +1,38 @@
+id: classic_houses
+name: Classic Houses
+description: >
+  The canonical zebra-puzzle scenario — five colorful houses on a street, each
+  with a different occupant, drink, pet, and cigarette brand.
+entity_label: house
+position_label: house
+attributes:
+  color:
+    - red
+    - green
+    - ivory
+    - yellow
+    - blue
+  nationality:
+    - Englishman
+    - Spaniard
+    - Ukrainian
+    - Norwegian
+    - Japanese
+  drink:
+    - coffee
+    - tea
+    - milk
+    - orange juice
+    - water
+  pet:
+    - dog
+    - snails
+    - fox
+    - horse
+    - zebra
+  cigarette:
+    - Old Gold
+    - Kools
+    - Chesterfields
+    - Lucky Strike
+    - Parliaments
