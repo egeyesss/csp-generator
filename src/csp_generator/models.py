@@ -40,6 +40,14 @@ class Theme(BaseModel):
     entity_label: str = Field(min_length=1)
     position_label: str = "position"
     attributes: dict[str, list[str]]
+    descriptors: dict[str, str] = Field(default_factory=dict)
+    """Per-category noun-phrase template for natural-language rendering.
+
+    Each entry maps a category name to a Python format string containing
+    `{value}` — e.g. `"the {value} house"` for the color category. Categories
+    without a descriptor fall back to a generic `"the {value} ({category})"`
+    phrase.
+    """
 
     @model_validator(mode="after")
     def _validate_attributes(self) -> Theme:
@@ -57,6 +65,14 @@ class Theme(BaseModel):
         for category, values in self.attributes.items():
             if len(set(values)) != len(values):
                 raise ValueError(f"duplicate values in category {category!r}: {values}")
+
+        for category, template in self.descriptors.items():
+            if category not in self.attributes:
+                raise ValueError(f"descriptor declared for unknown category {category!r}")
+            if "{value}" not in template:
+                raise ValueError(
+                    f"descriptor for {category!r} must include the {{value}} placeholder"
+                )
 
         return self
 
@@ -152,8 +168,52 @@ class RelativePosition(_ClueBase):
     value_b: str
 
 
+class Disjunction(_ClueBase):
+    """`(category_a, value_a)` shares a position with one of `options`.
+
+    Each option is a `(category, value)` pair. The clue asserts that the
+    `value_a` slot coincides with exactly one of the listed alternatives —
+    a generalization of "X is either A or B" to k >= 2 alternatives.
+    """
+
+    type: Literal["disjunction"] = "disjunction"
+    category_a: str
+    value_a: str
+    options: list[tuple[str, str]] = Field(min_length=2)
+
+    @model_validator(mode="after")
+    def _validate_options(self) -> Disjunction:
+        if len(set(self.options)) != len(self.options):
+            raise ValueError(f"Disjunction options must be unique, got {self.options}")
+        return self
+
+
+class Conditional(_ClueBase):
+    """If `(if_a) == (if_b)` in position, then `(then_a) == (then_b)` in position.
+
+    Both the antecedent and the consequent are positive-association predicates
+    over (category, value) pairs.
+    """
+
+    type: Literal["conditional"] = "conditional"
+    if_category_a: str
+    if_value_a: str
+    if_category_b: str
+    if_value_b: str
+    then_category_a: str
+    then_value_a: str
+    then_category_b: str
+    then_value_b: str
+
+
 Clue = Annotated[
-    PositiveAssociation | NegativeAssociation | AbsolutePosition | Adjacency | RelativePosition,
+    PositiveAssociation
+    | NegativeAssociation
+    | AbsolutePosition
+    | Adjacency
+    | RelativePosition
+    | Disjunction
+    | Conditional,
     Field(discriminator="type"),
 ]
 

@@ -26,6 +26,8 @@ from csp_generator.models import (
     AbsolutePosition,
     Adjacency,
     Clue,
+    Conditional,
+    Disjunction,
     NegativeAssociation,
     PositiveAssociation,
     Puzzle,
@@ -58,6 +60,15 @@ def _validate_clue_refs(clue: Clue, theme: Theme) -> None:
         check(clue.category, clue.value)
         if clue.position >= theme.size:
             raise ValueError(f"clue position {clue.position} out of range for size {theme.size}")
+    elif isinstance(clue, Disjunction):
+        check(clue.category_a, clue.value_a)
+        for opt_category, opt_value in clue.options:
+            check(opt_category, opt_value)
+    elif isinstance(clue, Conditional):
+        check(clue.if_category_a, clue.if_value_a)
+        check(clue.if_category_b, clue.if_value_b)
+        check(clue.then_category_a, clue.then_value_a)
+        check(clue.then_category_b, clue.then_value_b)
 
 
 def _apply_clue(
@@ -85,6 +96,28 @@ def _apply_clue(
         model.add_bool_or([left, right])
     elif isinstance(clue, RelativePosition):
         model.add(pos[clue.category_a][clue.value_a] < pos[clue.category_b][clue.value_b])
+    elif isinstance(clue, Disjunction):
+        # At least one of the options must coincide with (category_a, value_a).
+        target = pos[clue.category_a][clue.value_a]
+        option_holds: list[cp_model.IntVar] = []
+        for i, (opt_category, opt_value) in enumerate(clue.options):
+            b = model.new_bool_var(f"disj_{i}")
+            model.add(target == pos[opt_category][opt_value]).only_enforce_if(b)
+            model.add(target != pos[opt_category][opt_value]).only_enforce_if(~b)
+            option_holds.append(b)
+        model.add_bool_or(option_holds)
+    elif isinstance(clue, Conditional):
+        ant = model.new_bool_var("cond_ant")
+        cons = model.new_bool_var("cond_cons")
+        if_a = pos[clue.if_category_a][clue.if_value_a]
+        if_b = pos[clue.if_category_b][clue.if_value_b]
+        then_a = pos[clue.then_category_a][clue.then_value_a]
+        then_b = pos[clue.then_category_b][clue.then_value_b]
+        model.add(if_a == if_b).only_enforce_if(ant)
+        model.add(if_a != if_b).only_enforce_if(~ant)
+        model.add(then_a == then_b).only_enforce_if(cons)
+        model.add(then_a != then_b).only_enforce_if(~cons)
+        model.add_implication(ant, cons)
     else:  # pragma: no cover - exhaustive over the Clue union
         raise NotImplementedError(f"no constraint translation for {type(clue).__name__}")
 
