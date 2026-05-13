@@ -25,5 +25,6 @@ repos:
           - pydantic>=2.7
           - types-PyYAML
           - click>=8.1
+          - ortools>=9.10
         args: [--config-file=pyproject.toml]
         files: ^src/
