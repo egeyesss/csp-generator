@@ -5,6 +5,12 @@ description: >
   with a different occupant, drink, pet, and cigarette brand.
 entity_label: house
 position_label: house
+descriptors:
+  color: "the {value} house"
+  nationality: "the {value}"
+  drink: "the {value} drinker"
+  pet: "the {value} owner"
+  cigarette: "the {value} smoker"
 attributes:
   color:
     - red
