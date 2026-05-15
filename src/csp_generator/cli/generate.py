@@ -23,7 +23,7 @@ from csp_generator.themes.loader import ThemeNotFoundError, available_themes, lo
 @click.option("--seed", default=None, type=int, help="RNG seed for reproducible output.")
 @click.option(
     "--restarts",
-    default=5,
+    default=10,
     show_default=True,
     help="Greedy-removal restart count. Higher → smaller clue sets, slower.",
 )

@@ -134,6 +134,17 @@ def test_generated_puzzle_has_unique_id(classic: Theme) -> None:
     assert a.id != b.id
 
 
+def test_clue_count_5x5_in_expected_range(classic: Theme) -> None:
+    """Near-minimal clue sets for 5x5 should land in the 14-18 range.
+
+    The Einstein riddle (the canonical 5x5 reference) has 15 clues. A greedy
+    approximation won't always hit the true minimum, so we allow a small buffer.
+    """
+    counts = [len(generate(classic, rng=random.Random(i), n_restarts=5).clues) for i in range(5)]
+    avg = sum(counts) / len(counts)
+    assert 14 <= avg <= 19, f"average {avg:.1f} out of expected range; per-seed: {counts}"
+
+
 @given(seed=st.integers(min_value=0, max_value=49))
 @settings(max_examples=5, deadline=120_000)
 def test_generate_always_uniquely_solvable(seed: int) -> None:

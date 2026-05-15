@@ -7,6 +7,25 @@ import random
 from csp_generator.models import Clue, Puzzle, Solution, Theme
 from csp_generator.solver.ortools_solver import is_uniquely_solvable
 
+# Lower value → try to remove first (cheapest / most redundant clues).
+# RelPos and AbsPos are the most numerous; PA is the most informative and
+# hardest to drop, so we leave it for last. This ordering makes the greedy
+# pass strip redundant positional clues while PA clues are still present to
+# cover them — the result skews toward a PA-heavy, RelPos-light clue set
+# that reads like a natural zebra puzzle.
+_REMOVAL_PRIORITY: dict[str, int] = {
+    "relative_position": 0,
+    "absolute_position": 1,
+    "adjacency": 2,
+    "negative_association": 3,
+    "positive_association": 4,
+}
+
+
+def _priority_shuffle(pool: list[Clue], rng: random.Random) -> list[Clue]:
+    """Sort by removal priority; break ties randomly so each restart is distinct."""
+    return sorted(pool, key=lambda c: (_REMOVAL_PRIORITY.get(c.type, 99), rng.random()))
+
 
 def _greedy_reduce(
     pool: list[Clue],
@@ -14,13 +33,12 @@ def _greedy_reduce(
     theme: Theme,
     rng: random.Random,
 ) -> list[Clue]:
-    """Single greedy pass: shuffle pool, try removing each clue in order.
+    """Single greedy pass: order pool by removal priority, try removing each clue.
 
     A clue is dropped permanently if the remaining set still produces a
     uniquely solvable puzzle. Returns the reduced clue list.
     """
-    current = list(pool)
-    rng.shuffle(current)
+    current = _priority_shuffle(pool, rng)
     for clue in list(current):
         candidate = [c for c in current if c is not clue]
         probe = Puzzle(
