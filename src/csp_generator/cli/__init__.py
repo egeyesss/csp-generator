@@ -5,6 +5,7 @@ from __future__ import annotations
 import click
 
 from csp_generator import __version__
+from csp_generator.cli.generate import generate_cmd
 
 
 @click.group()
@@ -13,10 +14,7 @@ def main() -> None:
     """CSP-based zebra-style logic puzzle generator."""
 
 
-@main.command()
-def generate() -> None:
-    """Generate candidate puzzles. (Coming soon.)"""
-    click.echo("generate: not implemented yet")
+main.add_command(generate_cmd, name="generate")
 
 
 @main.command()
