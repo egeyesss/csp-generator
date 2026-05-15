@@ -17,7 +17,7 @@ from csp_generator.clues.enumerator import enumerate_valid_clues, is_satisfied_b
 from csp_generator.generator.pipeline import generate
 from csp_generator.generator.selection import select_minimum_clues
 from csp_generator.generator.solution import generate_solution
-from csp_generator.models import Puzzle, Theme
+from csp_generator.models import PositiveAssociation, Puzzle, Theme
 from csp_generator.solver.ortools_solver import is_uniquely_solvable
 from csp_generator.themes.loader import load_theme
 
@@ -143,6 +143,41 @@ def test_clue_count_5x5_in_expected_range(classic: Theme) -> None:
     counts = [len(generate(classic, rng=random.Random(i), n_restarts=5).clues) for i in range(5)]
     avg = sum(counts) / len(counts)
     assert 14 <= avg <= 19, f"average {avg:.1f} out of expected range; per-seed: {counts}"
+
+
+def test_question_target_not_in_clues_as_pa(classic: Theme) -> None:
+    """No PA clue should directly state the answer (pet=zebra on either side)."""
+    puzzle = generate(classic, rng=random.Random(0), n_restarts=3)
+    qt = classic.question_target
+    assert qt is not None
+    cat, val = qt
+    for clue in puzzle.clues:
+        if isinstance(clue, PositiveAssociation):
+            assert not (
+                clue.category_a == cat and clue.value_a == val
+            ), f"PA directly states question target on side A: {clue}"
+            assert not (
+                clue.category_b == cat and clue.value_b == val
+            ), f"PA directly states question target on side B: {clue}"
+
+
+def test_puzzle_stores_question(classic: Theme) -> None:
+    puzzle = generate(classic, rng=random.Random(1), n_restarts=1)
+    assert puzzle.question == classic.question_target
+
+
+def test_generate_without_question_target() -> None:
+    from csp_generator.models import Theme
+
+    theme = Theme(
+        id="tiny",
+        name="Tiny",
+        entity_label="slot",
+        attributes={"color": ["red", "blue", "green"], "shape": ["circle", "square", "triangle"]},
+    )
+    puzzle = generate(theme, rng=random.Random(0), n_restarts=1)
+    assert puzzle.question is None
+    assert is_uniquely_solvable(puzzle, theme)
 
 
 @given(seed=st.integers(min_value=0, max_value=49))

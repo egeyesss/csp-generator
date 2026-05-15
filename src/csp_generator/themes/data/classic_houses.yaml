@@ -5,6 +5,9 @@ description: >
   with a different occupant, drink, pet, and cigarette brand.
 entity_label: house
 position_label: house
+question_target:
+  - pet
+  - zebra
 descriptors:
   color: "the {value} house"
   nationality: "the {value}"
