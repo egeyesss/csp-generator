@@ -49,6 +49,18 @@ class Theme(BaseModel):
     phrase.
     """
 
+    question_target: tuple[str, str] | None = None
+    """The hidden answer the puzzle solver is supposed to deduce.
+
+    A (category, value) pair — e.g. ("pet", "zebra") for the classic zebra
+    puzzle. The generator will not include any PositiveAssociation clue that
+    directly states this pair, so the answer must be reached through inference.
+    If None, no clues are suppressed.
+
+    Each theme YAML should declare this field. Omitting it means every valid
+    clue (including direct giveaways) is available to the selector.
+    """
+
     @model_validator(mode="after")
     def _validate_attributes(self) -> Theme:
         if not self.attributes:
@@ -73,6 +85,13 @@ class Theme(BaseModel):
                 raise ValueError(
                     f"descriptor for {category!r} must include the {{value}} placeholder"
                 )
+
+        if self.question_target is not None:
+            qt_cat, qt_val = self.question_target
+            if qt_cat not in self.attributes:
+                raise ValueError(f"question_target category {qt_cat!r} not in theme attributes")
+            if qt_val not in self.attributes[qt_cat]:
+                raise ValueError(f"question_target value {qt_val!r} not in category {qt_cat!r}")
 
         return self
 
@@ -256,6 +275,12 @@ class Puzzle(BaseModel):
     clues: list[Clue]
     solution: Solution | None = None
     metrics: GenerationMetrics | None = None
+    question: tuple[str, str] | None = None
+    """The hidden answer the solver is asked to deduce, as (category, value).
+
+    Mirrors Theme.question_target. Stored here so the web app and review CLI
+    can display the puzzle question without needing to re-load the theme.
+    """
 
 
 # ---------------------------------------------------------------------------
