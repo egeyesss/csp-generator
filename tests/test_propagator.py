@@ -58,7 +58,7 @@ def test_question_target_wave_tracks_when_the_answer_resolves() -> None:
 
 
 @given(seed=st.integers(min_value=0, max_value=49))
-@settings(max_examples=5, deadline=None)
+@settings(max_examples=25, deadline=None)
 def test_generated_puzzles_resolve_by_pure_deduction(seed: int) -> None:
     theme = load_theme("classic_houses")
     puzzle = generate(theme, rng=random.Random(seed), n_restarts=1)

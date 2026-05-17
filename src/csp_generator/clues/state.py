@@ -49,7 +49,7 @@ class PossibilityState:
         contradiction there doesn't corrupt the real knowledge state."""
         twin = PossibilityState.__new__(PossibilityState)
         twin._size = self._size
-        twin._categories = self._categories  # immutable after construction
+        twin._categories = {cat: list(vals) for cat, vals in self._categories.items()}
         twin._possible = {cell: set(positions) for cell, positions in self._possible.items()}
         return twin
 
