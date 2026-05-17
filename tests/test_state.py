@@ -97,3 +97,17 @@ def test_from_theme_matches_grid_size_of_real_theme() -> None:
     state = PossibilityState.from_theme(classic)
     assert state.size == 5
     assert state.possible("pet", "zebra") == frozenset({0, 1, 2, 3, 4})
+
+
+def test_clone_is_an_independent_copy() -> None:
+    state = PossibilityState.from_theme(SMALL)
+    state.pin("color", "red", 0)
+    clone = state.clone()
+    # Same knowledge at the moment of cloning...
+    assert clone.possible("color", "red") == frozenset({0})
+    # ...but mutating the clone must not touch the original (the tracer
+    # explores hypotheticals on clones).
+    clone.eliminate("color", "green", 1)
+    assert state.is_possible("color", "green", 1) is True
+    state.eliminate("pet", "dog", 2)
+    assert clone.is_possible("pet", "dog", 2) is True
