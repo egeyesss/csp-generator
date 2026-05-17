@@ -57,6 +57,19 @@ def test_question_target_wave_tracks_when_the_answer_resolves() -> None:
     assert result.solved is False
 
 
+def test_branching_factor_is_a_sane_average() -> None:
+    theme = load_theme("classic_houses")
+    empty = trace(_einstein_puzzle(clues=[]), theme)
+    # Nothing deduced: every cell still has all `size` positions open, so the
+    # average branching is exactly the grid size.
+    assert empty.branching_factor == float(theme.size)
+
+    solved = trace(_einstein_puzzle(), theme)
+    # As the grid resolves the average candidate count falls below the
+    # starting size but never drops under 1.
+    assert 1.0 <= solved.branching_factor < float(theme.size)
+
+
 @given(seed=st.integers(min_value=0, max_value=49))
 @settings(max_examples=5, deadline=None)
 def test_generated_puzzles_resolve_by_pure_deduction(seed: int) -> None:

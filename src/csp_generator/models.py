@@ -254,6 +254,7 @@ class GenerationMetrics(BaseModel):
 
     clue_count: int = Field(ge=0)
     deduction_depth: int | None = None
+    hypothesis_depth: int | None = None
     branching_factor: float | None = None
     clue_variety: float | None = None
     composite_difficulty: float | None = None

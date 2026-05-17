@@ -5,6 +5,8 @@ from __future__ import annotations
 import random
 import uuid
 
+from csp_generator.analytics.difficulty import composite_difficulty
+from csp_generator.analytics.variety import clue_variety
 from csp_generator.clues.enumerator import enumerate_valid_clues
 from csp_generator.generator.selection import select_minimum_clues
 from csp_generator.generator.solution import generate_solution
@@ -16,6 +18,7 @@ from csp_generator.models import (
     Puzzle,
     Theme,
 )
+from csp_generator.solver.propagator import trace
 
 
 def _is_direct_answer(clue: Clue, question_target: tuple[str, str]) -> bool:
@@ -43,7 +46,9 @@ def generate(
        not given).
     3. Greedily strip redundant clues until the set is near-minimal.
 
-    Returns a Puzzle with the solution, question, and clue_count attached.
+    Returns a Puzzle with the solution, question, and full metrics attached
+    (clue count plus the tracer's deduction/branching metrics, clue variety,
+    and the composite difficulty score).
     """
     if rng is None:
         rng = random.Random()
@@ -55,15 +60,34 @@ def generate(
         if not isinstance(c, NegativeAssociation) and (qt is None or not _is_direct_answer(c, qt))
     ]
     clues = select_minimum_clues(pool, solution, theme, rng, n_restarts=n_restarts)
-    return Puzzle(
+
+    puzzle = Puzzle(
         id=str(uuid.uuid4()),
         theme_id=theme.id,
         size=theme.size,
         clues=clues,
         solution=solution,
         question=qt,
-        metrics=GenerationMetrics(clue_count=len(clues)),
     )
+
+    result = trace(puzzle, theme)
+    variety = clue_variety(clues)
+    metrics = GenerationMetrics(
+        clue_count=len(clues),
+        deduction_depth=result.deduction_depth,
+        hypothesis_depth=result.hypothesis_depth,
+        branching_factor=result.branching_factor,
+        clue_variety=variety,
+        composite_difficulty=composite_difficulty(
+            deduction_depth=result.deduction_depth,
+            hypothesis_depth=result.hypothesis_depth,
+            branching_factor=result.branching_factor,
+            clue_count=len(clues),
+            clue_variety=variety,
+            size=theme.size,
+        ),
+    )
+    return puzzle.model_copy(update={"metrics": metrics})
 
 
 __all__ = ["generate"]

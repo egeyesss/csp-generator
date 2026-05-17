@@ -116,6 +116,20 @@ def test_generated_puzzle_has_metrics(classic: Theme) -> None:
     assert puzzle.metrics.clue_count == len(puzzle.clues)
 
 
+def test_generated_puzzle_has_analytics_filled_in(classic: Theme) -> None:
+    puzzle = generate(classic, rng=random.Random(1), n_restarts=1)
+    m = puzzle.metrics
+    assert m is not None
+    # The tracer + analytics layer must populate every metric, not leave the
+    # placeholders at None.
+    assert m.deduction_depth is not None and m.deduction_depth >= 1
+    assert m.hypothesis_depth is not None and m.hypothesis_depth >= 0
+    assert m.branching_factor is not None and m.branching_factor >= 1.0
+    assert m.clue_variety is not None and 0.0 <= m.clue_variety <= 1.0
+    assert m.composite_difficulty is not None
+    assert 0.0 <= m.composite_difficulty <= 10.0
+
+
 def test_generated_puzzle_has_solution(classic: Theme) -> None:
     puzzle = generate(classic, rng=random.Random(2), n_restarts=1)
     assert puzzle.solution is not None
