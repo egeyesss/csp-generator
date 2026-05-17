@@ -1,0 +1,1514 @@
+[
+  {
+    "name": "easy-1",
+    "band": "easy",
+    "seed": 17,
+    "puzzle": {
+      "id": "7f694f2d-c6dd-465e-a4ee-315c28264281",
+      "theme_id": "classic_houses",
+      "size": 5,
+      "clues": [
+        {
+          "type": "absolute_position",
+          "category": "pet",
+          "value": "snails",
+          "position": 1
+        },
+        {
+          "type": "adjacency",
+          "category_a": "cigarette",
+          "value_a": "Kools",
+          "category_b": "drink",
+          "value_b": "orange juice"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "cigarette",
+          "value_a": "Kools",
+          "category_b": "cigarette",
+          "value_b": "Lucky Strike"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "nationality",
+          "value_a": "Japanese",
+          "category_b": "pet",
+          "value_b": "snails"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Parliaments",
+          "category_b": "pet",
+          "value_b": "dog"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Parliaments",
+          "category_b": "color",
+          "value_b": "red"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "ivory",
+          "category_b": "nationality",
+          "value_b": "Norwegian"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Kools",
+          "category_b": "pet",
+          "value_b": "fox"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Parliaments",
+          "category_b": "drink",
+          "value_b": "milk"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "drink",
+          "value_a": "orange juice",
+          "category_b": "nationality",
+          "value_b": "Japanese"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Old Gold",
+          "category_b": "drink",
+          "value_b": "tea"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "drink",
+          "value_a": "water",
+          "category_b": "nationality",
+          "value_b": "Spaniard"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Lucky Strike",
+          "category_b": "nationality",
+          "value_b": "Ukrainian"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Lucky Strike",
+          "category_b": "color",
+          "value_b": "blue"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "yellow",
+          "category_b": "drink",
+          "value_b": "water"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "blue",
+          "category_b": "pet",
+          "value_b": "horse"
+        }
+      ],
+      "solution": {
+        "theme_id": "classic_houses",
+        "assignments": {
+          "color": [
+            "red",
+            "ivory",
+            "green",
+            "yellow",
+            "blue"
+          ],
+          "nationality": [
+            "Englishman",
+            "Norwegian",
+            "Japanese",
+            "Spaniard",
+            "Ukrainian"
+          ],
+          "drink": [
+            "milk",
+            "tea",
+            "orange juice",
+            "water",
+            "coffee"
+          ],
+          "pet": [
+            "dog",
+            "snails",
+            "zebra",
+            "fox",
+            "horse"
+          ],
+          "cigarette": [
+            "Parliaments",
+            "Old Gold",
+            "Chesterfields",
+            "Kools",
+            "Lucky Strike"
+          ]
+        }
+      },
+      "metrics": null,
+      "question": [
+        "pet",
+        "zebra"
+      ]
+    }
+  },
+  {
+    "name": "easy-2",
+    "band": "easy",
+    "seed": 7,
+    "puzzle": {
+      "id": "f0c8d1de-afa6-4997-99ca-ef5ba1846841",
+      "theme_id": "classic_houses",
+      "size": 5,
+      "clues": [
+        {
+          "type": "absolute_position",
+          "category": "nationality",
+          "value": "Norwegian",
+          "position": 1
+        },
+        {
+          "type": "adjacency",
+          "category_a": "color",
+          "value_a": "ivory",
+          "category_b": "nationality",
+          "value_b": "Japanese"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "cigarette",
+          "value_a": "Chesterfields",
+          "category_b": "cigarette",
+          "value_b": "Parliaments"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "nationality",
+          "value_a": "Japanese",
+          "category_b": "pet",
+          "value_b": "dog"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "yellow",
+          "category_b": "drink",
+          "value_b": "coffee"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Kools",
+          "category_b": "nationality",
+          "value_b": "Ukrainian"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "drink",
+          "value_a": "milk",
+          "category_b": "nationality",
+          "value_b": "Norwegian"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "green",
+          "category_b": "drink",
+          "value_b": "tea"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Lucky Strike",
+          "category_b": "nationality",
+          "value_b": "Japanese"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Parliaments",
+          "category_b": "pet",
+          "value_b": "dog"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "red",
+          "category_b": "pet",
+          "value_b": "fox"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "nationality",
+          "value_a": "Norwegian",
+          "category_b": "pet",
+          "value_b": "fox"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "green",
+          "category_b": "nationality",
+          "value_b": "Japanese"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "drink",
+          "value_a": "orange juice",
+          "category_b": "pet",
+          "value_b": "snails"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Old Gold",
+          "category_b": "color",
+          "value_b": "ivory"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "nationality",
+          "value_a": "Englishman",
+          "category_b": "pet",
+          "value_b": "horse"
+        }
+      ],
+      "solution": {
+        "theme_id": "classic_houses",
+        "assignments": {
+          "color": [
+            "blue",
+            "red",
+            "yellow",
+            "green",
+            "ivory"
+          ],
+          "nationality": [
+            "Ukrainian",
+            "Norwegian",
+            "Spaniard",
+            "Japanese",
+            "Englishman"
+          ],
+          "drink": [
+            "orange juice",
+            "milk",
+            "coffee",
+            "tea",
+            "water"
+          ],
+          "pet": [
+            "snails",
+            "fox",
+            "dog",
+            "zebra",
+            "horse"
+          ],
+          "cigarette": [
+            "Kools",
+            "Chesterfields",
+            "Parliaments",
+            "Lucky Strike",
+            "Old Gold"
+          ]
+        }
+      },
+      "metrics": null,
+      "question": [
+        "pet",
+        "zebra"
+      ]
+    }
+  },
+  {
+    "name": "easy-3",
+    "band": "easy",
+    "seed": 8,
+    "puzzle": {
+      "id": "ccc46cd6-1980-4160-b28b-3a272602a1ef",
+      "theme_id": "classic_houses",
+      "size": 5,
+      "clues": [
+        {
+          "type": "absolute_position",
+          "category": "nationality",
+          "value": "Spaniard",
+          "position": 4
+        },
+        {
+          "type": "adjacency",
+          "category_a": "color",
+          "value_a": "blue",
+          "category_b": "pet",
+          "value_b": "fox"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "cigarette",
+          "value_a": "Kools",
+          "category_b": "cigarette",
+          "value_b": "Lucky Strike"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "color",
+          "value_a": "blue",
+          "category_b": "drink",
+          "value_b": "water"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "nationality",
+          "value_a": "Ukrainian",
+          "category_b": "pet",
+          "value_b": "fox"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Chesterfields",
+          "category_b": "drink",
+          "value_b": "milk"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "blue",
+          "category_b": "drink",
+          "value_b": "orange juice"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Kools",
+          "category_b": "color",
+          "value_b": "ivory"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "nationality",
+          "value_a": "Norwegian",
+          "category_b": "pet",
+          "value_b": "snails"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "red",
+          "category_b": "drink",
+          "value_b": "coffee"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Parliaments",
+          "category_b": "drink",
+          "value_b": "orange juice"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Kools",
+          "category_b": "nationality",
+          "value_b": "Englishman"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "green",
+          "category_b": "pet",
+          "value_b": "horse"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "green",
+          "category_b": "nationality",
+          "value_b": "Spaniard"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Chesterfields",
+          "category_b": "pet",
+          "value_b": "dog"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Old Gold",
+          "category_b": "drink",
+          "value_b": "coffee"
+        }
+      ],
+      "solution": {
+        "theme_id": "classic_houses",
+        "assignments": {
+          "color": [
+            "yellow",
+            "red",
+            "blue",
+            "ivory",
+            "green"
+          ],
+          "nationality": [
+            "Japanese",
+            "Ukrainian",
+            "Norwegian",
+            "Englishman",
+            "Spaniard"
+          ],
+          "drink": [
+            "milk",
+            "coffee",
+            "orange juice",
+            "water",
+            "tea"
+          ],
+          "pet": [
+            "dog",
+            "fox",
+            "snails",
+            "zebra",
+            "horse"
+          ],
+          "cigarette": [
+            "Chesterfields",
+            "Old Gold",
+            "Parliaments",
+            "Kools",
+            "Lucky Strike"
+          ]
+        }
+      },
+      "metrics": null,
+      "question": [
+        "pet",
+        "zebra"
+      ]
+    }
+  },
+  {
+    "name": "medium-1",
+    "band": "medium",
+    "seed": 1,
+    "puzzle": {
+      "id": "6e81194c-0479-4c7c-8168-04bca860454b",
+      "theme_id": "classic_houses",
+      "size": 5,
+      "clues": [
+        {
+          "type": "absolute_position",
+          "category": "nationality",
+          "value": "Japanese",
+          "position": 3
+        },
+        {
+          "type": "adjacency",
+          "category_a": "drink",
+          "value_a": "coffee",
+          "category_b": "nationality",
+          "value_b": "Spaniard"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "color",
+          "value_a": "blue",
+          "category_b": "drink",
+          "value_b": "orange juice"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "drink",
+          "value_a": "tea",
+          "category_b": "pet",
+          "value_b": "zebra"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Old Gold",
+          "category_b": "pet",
+          "value_b": "dog"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Chesterfields",
+          "category_b": "drink",
+          "value_b": "coffee"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "yellow",
+          "category_b": "nationality",
+          "value_b": "Ukrainian"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "blue",
+          "category_b": "pet",
+          "value_b": "fox"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "green",
+          "category_b": "drink",
+          "value_b": "tea"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "ivory",
+          "category_b": "drink",
+          "value_b": "milk"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Parliaments",
+          "category_b": "pet",
+          "value_b": "fox"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Chesterfields",
+          "category_b": "nationality",
+          "value_b": "Japanese"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "ivory",
+          "category_b": "pet",
+          "value_b": "snails"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Lucky Strike",
+          "category_b": "drink",
+          "value_b": "tea"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "blue",
+          "category_b": "nationality",
+          "value_b": "Spaniard"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "drink",
+          "value_a": "milk",
+          "category_b": "nationality",
+          "value_b": "Englishman"
+        }
+      ],
+      "solution": {
+        "theme_id": "classic_houses",
+        "assignments": {
+          "color": [
+            "ivory",
+            "yellow",
+            "blue",
+            "red",
+            "green"
+          ],
+          "nationality": [
+            "Englishman",
+            "Ukrainian",
+            "Spaniard",
+            "Japanese",
+            "Norwegian"
+          ],
+          "drink": [
+            "milk",
+            "orange juice",
+            "water",
+            "coffee",
+            "tea"
+          ],
+          "pet": [
+            "snails",
+            "dog",
+            "fox",
+            "zebra",
+            "horse"
+          ],
+          "cigarette": [
+            "Kools",
+            "Old Gold",
+            "Parliaments",
+            "Chesterfields",
+            "Lucky Strike"
+          ]
+        }
+      },
+      "metrics": null,
+      "question": [
+        "pet",
+        "zebra"
+      ]
+    }
+  },
+  {
+    "name": "medium-2",
+    "band": "medium",
+    "seed": 9,
+    "puzzle": {
+      "id": "5f42360b-d2f0-4d65-9903-ed9dd270710e",
+      "theme_id": "classic_houses",
+      "size": 5,
+      "clues": [
+        {
+          "type": "absolute_position",
+          "category": "pet",
+          "value": "snails",
+          "position": 3
+        },
+        {
+          "type": "adjacency",
+          "category_a": "cigarette",
+          "value_a": "Old Gold",
+          "category_b": "cigarette",
+          "value_b": "Kools"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "cigarette",
+          "value_a": "Chesterfields",
+          "category_b": "nationality",
+          "value_b": "Norwegian"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "color",
+          "value_a": "green",
+          "category_b": "drink",
+          "value_b": "orange juice"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Parliaments",
+          "category_b": "pet",
+          "value_b": "dog"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "green",
+          "category_b": "pet",
+          "value_b": "fox"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "nationality",
+          "value_a": "Englishman",
+          "category_b": "pet",
+          "value_b": "snails"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Kools",
+          "category_b": "nationality",
+          "value_b": "Englishman"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "yellow",
+          "category_b": "pet",
+          "value_b": "horse"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Chesterfields",
+          "category_b": "color",
+          "value_b": "red"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "ivory",
+          "category_b": "drink",
+          "value_b": "coffee"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "drink",
+          "value_a": "milk",
+          "category_b": "nationality",
+          "value_b": "Norwegian"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Lucky Strike",
+          "category_b": "drink",
+          "value_b": "water"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "nationality",
+          "value_a": "Japanese",
+          "category_b": "pet",
+          "value_b": "fox"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "yellow",
+          "category_b": "nationality",
+          "value_b": "Spaniard"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Lucky Strike",
+          "category_b": "color",
+          "value_b": "yellow"
+        }
+      ],
+      "solution": {
+        "theme_id": "classic_houses",
+        "assignments": {
+          "color": [
+            "blue",
+            "red",
+            "green",
+            "ivory",
+            "yellow"
+          ],
+          "nationality": [
+            "Norwegian",
+            "Ukrainian",
+            "Japanese",
+            "Englishman",
+            "Spaniard"
+          ],
+          "drink": [
+            "milk",
+            "orange juice",
+            "tea",
+            "coffee",
+            "water"
+          ],
+          "pet": [
+            "dog",
+            "zebra",
+            "fox",
+            "snails",
+            "horse"
+          ],
+          "cigarette": [
+            "Parliaments",
+            "Chesterfields",
+            "Old Gold",
+            "Kools",
+            "Lucky Strike"
+          ]
+        }
+      },
+      "metrics": null,
+      "question": [
+        "pet",
+        "zebra"
+      ]
+    }
+  },
+  {
+    "name": "medium-3",
+    "band": "medium",
+    "seed": 2,
+    "puzzle": {
+      "id": "726bcf8b-7c1f-451e-b331-a78d914f445c",
+      "theme_id": "classic_houses",
+      "size": 5,
+      "clues": [
+        {
+          "type": "absolute_position",
+          "category": "pet",
+          "value": "dog",
+          "position": 0
+        },
+        {
+          "type": "adjacency",
+          "category_a": "cigarette",
+          "value_a": "Lucky Strike",
+          "category_b": "nationality",
+          "value_b": "Japanese"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "color",
+          "value_a": "green",
+          "category_b": "drink",
+          "value_b": "tea"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "color",
+          "value_a": "yellow",
+          "category_b": "pet",
+          "value_b": "snails"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "drink",
+          "value_a": "milk",
+          "category_b": "pet",
+          "value_b": "fox"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "blue",
+          "category_b": "nationality",
+          "value_b": "Ukrainian"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "nationality",
+          "value_a": "Norwegian",
+          "category_b": "pet",
+          "value_b": "dog"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "nationality",
+          "value_a": "Japanese",
+          "category_b": "pet",
+          "value_b": "fox"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "red",
+          "category_b": "nationality",
+          "value_b": "Spaniard"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Old Gold",
+          "category_b": "color",
+          "value_b": "ivory"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "drink",
+          "value_a": "water",
+          "category_b": "nationality",
+          "value_b": "Spaniard"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Parliaments",
+          "category_b": "color",
+          "value_b": "red"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "green",
+          "category_b": "drink",
+          "value_b": "orange juice"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Lucky Strike",
+          "category_b": "color",
+          "value_b": "blue"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "nationality",
+          "value_a": "Spaniard",
+          "category_b": "pet",
+          "value_b": "horse"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "ivory",
+          "category_b": "nationality",
+          "value_b": "Norwegian"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Kools",
+          "category_b": "pet",
+          "value_b": "snails"
+        }
+      ],
+      "solution": {
+        "theme_id": "classic_houses",
+        "assignments": {
+          "color": [
+            "ivory",
+            "green",
+            "yellow",
+            "blue",
+            "red"
+          ],
+          "nationality": [
+            "Norwegian",
+            "Englishman",
+            "Japanese",
+            "Ukrainian",
+            "Spaniard"
+          ],
+          "drink": [
+            "tea",
+            "orange juice",
+            "milk",
+            "coffee",
+            "water"
+          ],
+          "pet": [
+            "dog",
+            "snails",
+            "fox",
+            "zebra",
+            "horse"
+          ],
+          "cigarette": [
+            "Old Gold",
+            "Kools",
+            "Chesterfields",
+            "Lucky Strike",
+            "Parliaments"
+          ]
+        }
+      },
+      "metrics": null,
+      "question": [
+        "pet",
+        "zebra"
+      ]
+    }
+  },
+  {
+    "name": "hard-1",
+    "band": "hard",
+    "seed": 11,
+    "puzzle": {
+      "id": "1db394f9-c748-47da-8e51-41608f2b5b85",
+      "theme_id": "classic_houses",
+      "size": 5,
+      "clues": [
+        {
+          "type": "absolute_position",
+          "category": "nationality",
+          "value": "Englishman",
+          "position": 1
+        },
+        {
+          "type": "adjacency",
+          "category_a": "nationality",
+          "value_a": "Englishman",
+          "category_b": "nationality",
+          "value_b": "Ukrainian"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "color",
+          "value_a": "blue",
+          "category_b": "drink",
+          "value_b": "tea"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "color",
+          "value_a": "red",
+          "category_b": "color",
+          "value_b": "ivory"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Parliaments",
+          "category_b": "pet",
+          "value_b": "horse"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "yellow",
+          "category_b": "pet",
+          "value_b": "dog"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "drink",
+          "value_a": "milk",
+          "category_b": "nationality",
+          "value_b": "Japanese"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Parliaments",
+          "category_b": "color",
+          "value_b": "ivory"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Lucky Strike",
+          "category_b": "nationality",
+          "value_b": "Spaniard"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "blue",
+          "category_b": "nationality",
+          "value_b": "Norwegian"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "nationality",
+          "value_a": "Ukrainian",
+          "category_b": "pet",
+          "value_b": "fox"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "drink",
+          "value_a": "coffee",
+          "category_b": "nationality",
+          "value_b": "Spaniard"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Old Gold",
+          "category_b": "drink",
+          "value_b": "water"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Old Gold",
+          "category_b": "color",
+          "value_b": "red"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "nationality",
+          "value_a": "Englishman",
+          "category_b": "pet",
+          "value_b": "snails"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Chesterfields",
+          "category_b": "pet",
+          "value_b": "fox"
+        }
+      ],
+      "solution": {
+        "theme_id": "classic_houses",
+        "assignments": {
+          "color": [
+            "ivory",
+            "red",
+            "green",
+            "blue",
+            "yellow"
+          ],
+          "nationality": [
+            "Japanese",
+            "Englishman",
+            "Ukrainian",
+            "Norwegian",
+            "Spaniard"
+          ],
+          "drink": [
+            "milk",
+            "water",
+            "tea",
+            "orange juice",
+            "coffee"
+          ],
+          "pet": [
+            "horse",
+            "snails",
+            "fox",
+            "zebra",
+            "dog"
+          ],
+          "cigarette": [
+            "Parliaments",
+            "Old Gold",
+            "Chesterfields",
+            "Kools",
+            "Lucky Strike"
+          ]
+        }
+      },
+      "metrics": null,
+      "question": [
+        "pet",
+        "zebra"
+      ]
+    }
+  },
+  {
+    "name": "hard-2",
+    "band": "hard",
+    "seed": 21,
+    "puzzle": {
+      "id": "e43b9016-f418-4059-b920-04bd2df79953",
+      "theme_id": "classic_houses",
+      "size": 5,
+      "clues": [
+        {
+          "type": "absolute_position",
+          "category": "cigarette",
+          "value": "Kools",
+          "position": 3
+        },
+        {
+          "type": "adjacency",
+          "category_a": "color",
+          "value_a": "ivory",
+          "category_b": "pet",
+          "value_b": "fox"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "nationality",
+          "value_a": "Englishman",
+          "category_b": "nationality",
+          "value_b": "Norwegian"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "nationality",
+          "value_a": "Ukrainian",
+          "category_b": "nationality",
+          "value_b": "Norwegian"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "blue",
+          "category_b": "pet",
+          "value_b": "fox"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "green",
+          "category_b": "drink",
+          "value_b": "water"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Lucky Strike",
+          "category_b": "drink",
+          "value_b": "orange juice"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Parliaments",
+          "category_b": "nationality",
+          "value_b": "Englishman"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "yellow",
+          "category_b": "drink",
+          "value_b": "tea"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "nationality",
+          "value_a": "Ukrainian",
+          "category_b": "pet",
+          "value_b": "dog"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "red",
+          "category_b": "pet",
+          "value_b": "horse"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "blue",
+          "category_b": "nationality",
+          "value_b": "Spaniard"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "drink",
+          "value_a": "milk",
+          "category_b": "pet",
+          "value_b": "snails"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Kools",
+          "category_b": "drink",
+          "value_b": "tea"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "green",
+          "category_b": "pet",
+          "value_b": "dog"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Chesterfields",
+          "category_b": "color",
+          "value_b": "blue"
+        }
+      ],
+      "solution": {
+        "theme_id": "classic_houses",
+        "assignments": {
+          "color": [
+            "red",
+            "blue",
+            "ivory",
+            "yellow",
+            "green"
+          ],
+          "nationality": [
+            "Japanese",
+            "Spaniard",
+            "Englishman",
+            "Norwegian",
+            "Ukrainian"
+          ],
+          "drink": [
+            "orange juice",
+            "coffee",
+            "milk",
+            "tea",
+            "water"
+          ],
+          "pet": [
+            "horse",
+            "fox",
+            "snails",
+            "zebra",
+            "dog"
+          ],
+          "cigarette": [
+            "Lucky Strike",
+            "Chesterfields",
+            "Parliaments",
+            "Kools",
+            "Old Gold"
+          ]
+        }
+      },
+      "metrics": null,
+      "question": [
+        "pet",
+        "zebra"
+      ]
+    }
+  },
+  {
+    "name": "hard-3",
+    "band": "hard",
+    "seed": 0,
+    "puzzle": {
+      "id": "5048ceae-12b1-40d2-b758-4d175aafc978",
+      "theme_id": "classic_houses",
+      "size": 5,
+      "clues": [
+        {
+          "type": "absolute_position",
+          "category": "pet",
+          "value": "zebra",
+          "position": 4
+        },
+        {
+          "type": "adjacency",
+          "category_a": "cigarette",
+          "value_a": "Parliaments",
+          "category_b": "pet",
+          "value_b": "horse"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "color",
+          "value_a": "blue",
+          "category_b": "nationality",
+          "value_b": "Spaniard"
+        },
+        {
+          "type": "adjacency",
+          "category_a": "cigarette",
+          "value_a": "Old Gold",
+          "category_b": "nationality",
+          "value_b": "Norwegian"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Kools",
+          "category_b": "color",
+          "value_b": "ivory"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Lucky Strike",
+          "category_b": "nationality",
+          "value_b": "Spaniard"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Parliaments",
+          "category_b": "pet",
+          "value_b": "dog"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Kools",
+          "category_b": "nationality",
+          "value_b": "Englishman"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "yellow",
+          "category_b": "drink",
+          "value_b": "orange juice"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "green",
+          "category_b": "nationality",
+          "value_b": "Ukrainian"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Lucky Strike",
+          "category_b": "drink",
+          "value_b": "water"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "drink",
+          "value_a": "milk",
+          "category_b": "nationality",
+          "value_b": "Norwegian"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "nationality",
+          "value_a": "Englishman",
+          "category_b": "pet",
+          "value_b": "fox"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "cigarette",
+          "value_a": "Parliaments",
+          "category_b": "drink",
+          "value_b": "coffee"
+        },
+        {
+          "type": "positive_association",
+          "category_a": "color",
+          "value_a": "red",
+          "category_b": "pet",
+          "value_b": "horse"
+        }
+      ],
+      "solution": {
+        "theme_id": "classic_houses",
+        "assignments": {
+          "color": [
+            "ivory",
+            "green",
+            "red",
+            "blue",
+            "yellow"
+          ],
+          "nationality": [
+            "Englishman",
+            "Ukrainian",
+            "Spaniard",
+            "Norwegian",
+            "Japanese"
+          ],
+          "drink": [
+            "tea",
+            "coffee",
+            "water",
+            "milk",
+            "orange juice"
+          ],
+          "pet": [
+            "fox",
+            "dog",
+            "horse",
+            "snails",
+            "zebra"
+          ],
+          "cigarette": [
+            "Kools",
+            "Parliaments",
+            "Lucky Strike",
+            "Chesterfields",
+            "Old Gold"
+          ]
+        }
+      },
+      "metrics": null,
+      "question": [
+        "pet",
+        "zebra"
+      ]
+    }
+  }
+]
