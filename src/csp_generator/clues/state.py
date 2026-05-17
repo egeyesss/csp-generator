@@ -44,6 +44,15 @@ class PossibilityState:
     def from_theme(cls, theme: Theme) -> PossibilityState:
         return cls(theme.attributes)
 
+    def clone(self) -> PossibilityState:
+        """A deep copy. The tracer explores hypotheticals on a clone so a
+        contradiction there doesn't corrupt the real knowledge state."""
+        twin = PossibilityState.__new__(PossibilityState)
+        twin._size = self._size
+        twin._categories = {cat: list(vals) for cat, vals in self._categories.items()}
+        twin._possible = {cell: set(positions) for cell, positions in self._possible.items()}
+        return twin
+
     @property
     def size(self) -> int:
         return self._size
