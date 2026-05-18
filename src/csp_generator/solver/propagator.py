@@ -35,11 +35,13 @@ from csp_generator.models import Clue, Puzzle, Theme
 _MAX_WAVES = 1000
 
 # How deep nested case analysis may go. Phase 2 uses iterative deepening —
-# it always tries the shallowest look-ahead first and only escalates when
-# genuinely stuck — so well-formed puzzles (Einstein, minimal 5x5) resolve at
-# nesting 1 in milliseconds and never pay for the deeper, exponential levels.
-# A puzzle still unresolved at this cap is treated as not pure-deduction.
-_MAX_HYPOTHESIS_DEPTH = 3
+# shallowest look-ahead first, escalate only when genuinely stuck — so
+# well-formed puzzles (Einstein, minimal 5x5) resolve at nesting 1 in
+# milliseconds. The cap also bounds the pathological case: a puzzle that
+# never refutes (e.g. no clues) explores maximally before giving up, so 2
+# keeps that worst case to seconds. Nothing observed needs deeper than this;
+# a puzzle still unresolved at the cap is treated as not pure-deduction.
+_MAX_HYPOTHESIS_DEPTH = 2
 
 
 @dataclass(frozen=True)
@@ -50,13 +52,17 @@ class DeductionTrace:
     (initial pass plus the re-propagation triggered by each proven
     elimination). ``hypothesis_depth`` is the deepest nesting of
     contradiction-driven case analysis required (0 = propagation alone).
-    ``question_target_wave`` is the wave the answer cell resolved on, or
-    ``None`` if there is no target / it never resolved. ``state`` is the
-    final knowledge state so callers can read the deduced grid.
+    ``branching_factor`` is the average number of candidates left per
+    unresolved cell, sampled at the start and after every wave — a proxy for
+    how much ambiguity the solver wades through. ``question_target_wave`` is
+    the wave the answer cell resolved on, or ``None`` if there is no target /
+    it never resolved. ``state`` is the final knowledge state so callers can
+    read the deduced grid.
     """
 
     deduction_depth: int
     hypothesis_depth: int
+    branching_factor: float
     solved: bool
     requires_guess: bool
     question_target_wave: int | None
@@ -138,6 +144,18 @@ def _refute(state: PossibilityState, clues: list[Clue], theme: Theme, depth: int
     return False
 
 
+def _mean_branching(state: PossibilityState, theme: Theme) -> float:
+    """Average candidate count over cells that are still ambiguous; 1.0 once
+    everything is pinned."""
+    sizes = [
+        len(state.possible(category, value))
+        for category, values in theme.attributes.items()
+        for value in values
+        if state.resolved_position(category, value) is None
+    ]
+    return sum(sizes) / len(sizes) if sizes else 1.0
+
+
 def trace(puzzle: Puzzle, theme: Theme) -> DeductionTrace:
     """Solve `puzzle` by pure deduction and report how deep it went."""
     if puzzle.theme_id != theme.id:
@@ -151,17 +169,20 @@ def trace(puzzle: Puzzle, theme: Theme) -> DeductionTrace:
 
     depth = 0
     target_wave: int | None = None
+    branching_samples: list[float] = [_mean_branching(state, theme)]
 
     def run_waves() -> None:
-        """Propagate on the real grid to a fixpoint, counting waves and
-        noting when the target resolves. Same loud-failure guard as the
-        ``_MAX_WAVES`` cap promises: a non-terminating rule raises rather
-        than silently spinning."""
+        """Propagate on the real grid to a fixpoint, counting waves, sampling
+        branching, and noting when the target resolves. The ``_MAX_WAVES``
+        cap is a loud-failure guard: a non-terminating rule raises rather
+        than silently spinning. Shared by both phases so the guarantee holds
+        after Phase 2 eliminations too."""
         nonlocal depth, target_wave
         for _ in range(_MAX_WAVES):
             if not _one_wave(state, clues, theme):
                 return
             depth += 1
+            branching_samples.append(_mean_branching(state, theme))
             if (
                 target_wave is None
                 and target is not None
@@ -203,6 +224,7 @@ def trace(puzzle: Puzzle, theme: Theme) -> DeductionTrace:
     return DeductionTrace(
         deduction_depth=depth,
         hypothesis_depth=hypothesis_depth,
+        branching_factor=sum(branching_samples) / len(branching_samples),
         solved=solved,
         requires_guess=not solved,
         question_target_wave=target_wave,
