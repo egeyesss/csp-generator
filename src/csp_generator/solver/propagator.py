@@ -171,26 +171,30 @@ def trace(puzzle: Puzzle, theme: Theme) -> DeductionTrace:
     target_wave: int | None = None
     branching_samples: list[float] = [_mean_branching(state, theme)]
 
-    def after_wave() -> None:
-        nonlocal target_wave
-        branching_samples.append(_mean_branching(state, theme))
-        if (
-            target_wave is None
-            and target is not None
-            and state.resolved_position(*target) is not None
-        ):
-            target_wave = depth
+    def run_waves() -> None:
+        """Propagate on the real grid to a fixpoint, counting waves, sampling
+        branching, and noting when the target resolves. The ``_MAX_WAVES``
+        cap is a loud-failure guard: a non-terminating rule raises rather
+        than silently spinning. Shared by both phases so the guarantee holds
+        after Phase 2 eliminations too."""
+        nonlocal depth, target_wave
+        for _ in range(_MAX_WAVES):
+            if not _one_wave(state, clues, theme):
+                return
+            depth += 1
+            branching_samples.append(_mean_branching(state, theme))
+            if (
+                target_wave is None
+                and target is not None
+                and state.resolved_position(*target) is not None
+            ):
+                target_wave = depth
+            if state.contradiction():
+                return
+        raise AssertionError("propagation did not reach a fixpoint")
 
     # Phase 1: plain propagation on the real grid, counting waves.
-    for _ in range(_MAX_WAVES):
-        if not _one_wave(state, clues, theme):
-            break
-        depth += 1
-        after_wave()
-        if state.contradiction():
-            break
-    else:
-        raise AssertionError("propagation did not reach a fixpoint")
+    run_waves()
 
     # Phase 2: when propagation stalls, refute impossible candidates via
     # case analysis. Iterative deepening — always try the shallowest
@@ -208,11 +212,7 @@ def trace(puzzle: Puzzle, theme: Theme) -> DeductionTrace:
                 if _refute(twin, clues, theme, look):
                     state.eliminate(*cell, position)
                     hypothesis_depth = max(hypothesis_depth, look + 1)
-                    for _ in range(_MAX_WAVES):
-                        if not _one_wave(state, clues, theme):
-                            break
-                        depth += 1
-                        after_wave()
+                    run_waves()
                     made_progress = True
             if made_progress:
                 break

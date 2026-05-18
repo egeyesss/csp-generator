@@ -39,13 +39,22 @@ def _bank() -> list[Entry]:
     return data
 
 
+# Each puzzle's solve is the expensive part (OR-Tools + tracer). Cache by
+# name so the parametrized cases and the band-separation test share the work
+# rather than re-running all nine solves.
+_score_cache: dict[str, float] = {}
+
+
 def _difficulty(entry: Entry) -> float:
+    name: str = entry["name"]
+    if name in _score_cache:
+        return _score_cache[name]
     theme = load_theme(entry["puzzle"]["theme_id"])
     puzzle = Puzzle(**entry["puzzle"])
-    assert is_uniquely_solvable(puzzle, theme), f"{entry['name']} is not unique"
+    assert is_uniquely_solvable(puzzle, theme), f"{name} is not unique"
     result = trace(puzzle, theme)
-    assert result.requires_guess is False, f"{entry['name']} needs a guess"
-    return composite_difficulty(
+    assert result.requires_guess is False, f"{name} needs a guess"
+    score = composite_difficulty(
         deduction_depth=result.deduction_depth,
         hypothesis_depth=result.hypothesis_depth,
         branching_factor=result.branching_factor,
@@ -53,6 +62,8 @@ def _difficulty(entry: Entry) -> float:
         clue_variety=clue_variety(puzzle.clues),
         size=theme.size,
     )
+    _score_cache[name] = score
+    return score
 
 
 def test_bank_has_three_of_each_band() -> None:

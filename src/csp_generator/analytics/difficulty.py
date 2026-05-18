@@ -47,7 +47,7 @@ def composite_difficulty(
     hypothesis_term = _clamp(hypothesis_depth / _HYPOTHESIS_SATURATION)
     # branching ranges roughly 1..size; map that onto 0..1.
     branching_term = _clamp((branching_factor - 1.0) / max(size - 1, 1))
-    sparsity_term = _clamp(1.0 - clue_count / (size * size))
+    sparsity_term = _clamp(1.0 - clue_count / max(size * size, 1))
     variety_term = _clamp(clue_variety)
 
     score = (
