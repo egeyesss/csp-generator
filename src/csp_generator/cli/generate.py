@@ -47,6 +47,7 @@ from csp_generator.themes.loader import ThemeNotFoundError, available_themes, lo
     "--max-retries",
     default=10,
     show_default=True,
+    type=click.IntRange(min=1),
     help="Retry budget per candidate when --min-difficulty is set.",
 )
 def generate_cmd(

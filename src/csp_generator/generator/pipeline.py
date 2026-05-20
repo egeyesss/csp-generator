@@ -57,6 +57,8 @@ def generate(
     back to the highest-difficulty attempt if none do — never returns
     `None` or raises on unreachable floors.
     """
+    if min_difficulty is not None and max_retries < 1:
+        raise ValueError(f"max_retries must be >= 1 when min_difficulty is set, got {max_retries}")
     if rng is None:
         rng = random.Random()
 
@@ -68,7 +70,8 @@ def generate(
             return puzzle
         if best is None or _difficulty(puzzle) > _difficulty(best):
             best = puzzle
-    assert best is not None  # min_difficulty is not None ⇒ attempts >= 1 ⇒ best set
+    # `best` is non-None: attempts >= 1 above guarantees at least one iteration.
+    assert best is not None
     return best
 
 

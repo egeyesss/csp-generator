@@ -238,6 +238,27 @@ def test_generate_default_has_no_floor(classic: Theme) -> None:
     assert puzzle.metrics is not None
 
 
+def test_generate_rejects_nonpositive_max_retries(classic: Theme) -> None:
+    """max_retries < 1 with a floor set should raise cleanly, not assert."""
+    with pytest.raises(ValueError, match="max_retries"):
+        generate(classic, rng=random.Random(0), n_restarts=1, min_difficulty=5.0, max_retries=0)
+
+
+def test_generate_cli_rejects_zero_max_retries() -> None:
+    """The CLI flag should validate upfront so users see a clean error."""
+    from click.testing import CliRunner
+
+    from csp_generator.cli import main
+
+    runner = CliRunner()
+    result = runner.invoke(
+        main,
+        ["generate", "--theme", "classic_houses", "--max-retries", "0"],
+    )
+    assert result.exit_code != 0
+    assert "max-retries" in result.output.lower() or "max_retries" in result.output.lower()
+
+
 # ---------------------------------------------------------------------------
 # Multi-theme smoke: every shipped theme can produce a valid puzzle
 # ---------------------------------------------------------------------------
