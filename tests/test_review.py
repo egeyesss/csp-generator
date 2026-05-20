@@ -163,6 +163,40 @@ def test_skip_leaves_candidate_in_place(
     assert len(_puzzle_files(workspace["approved"])) == 1
 
 
+def test_exhausted_prompter_ends_session_cleanly(
+    workspace: dict[str, Path], two_candidates: list[Path]
+) -> None:
+    """The interactive prompter can break out early (user says \"no\" to continue).
+
+    When it does, the iterator is exhausted before all candidates have been
+    seen — the session must exit cleanly with the partial tally, not crash on
+    an uncaught StopIteration.
+    """
+    one_then_done: Iterator[ReviewDecision] = iter(
+        [
+            ReviewDecision(
+                review=ReviewData(
+                    approved=True,
+                    difficulty_rating=5,
+                    clue_variety_rating=3,
+                    aha_factor=3,
+                ),
+                skip=False,
+            ),
+        ]
+    )
+    results = run_review_session(
+        candidates_dir=workspace["candidates"],
+        approved_dir=workspace["approved"],
+        rejected_dir=workspace["rejected"],
+        prompter=one_then_done,
+    )
+    assert results.reviewed == 1
+    assert results.approved == 1
+    # The un-reviewed candidate stays put.
+    assert len(_puzzle_files(workspace["candidates"])) == 1
+
+
 def test_empty_candidates_dir_is_no_op(workspace: dict[str, Path]) -> None:
     results = run_review_session(
         candidates_dir=workspace["candidates"],

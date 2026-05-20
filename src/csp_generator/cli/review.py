@@ -81,7 +81,12 @@ def run_review_session(
 
     paths = sorted(p for p in candidates_dir.glob("*.json") if not p.name.endswith(".review.json"))
     for puzzle_path in paths:
-        decision = next(iterator)
+        decision = next(iterator, None)
+        if decision is None:
+            # The interactive prompter exits early when the reviewer says "no"
+            # to "continue to next candidate?"; treat that as a clean stop so
+            # the session summary still prints with the partial tally.
+            break
         if decision.skip:
             skipped += 1
             continue
@@ -167,9 +172,9 @@ def _display_candidate(
 def _interactive_prompter(console: Console, candidates_dir: Path) -> Iterator[ReviewDecision]:
     """Yield decisions by asking the human reviewer through Rich prompts.
 
-    Themes are loaded lazily on the file the loop is currently displaying,
-    so we re-read each candidate's puzzle here just to know its theme. The
-    session loop reads it again to do the actual work — duplicate but cheap.
+    Each candidate JSON is loaded here so we can render its grid and look up
+    its theme for the prompts. The session loop works purely on file paths
+    and does not re-read the JSON.
     """
     paths = sorted(p for p in candidates_dir.glob("*.json") if not p.name.endswith(".review.json"))
     for i, puzzle_path in enumerate(paths, start=1):
