@@ -26,5 +26,6 @@ repos:
           - types-PyYAML
           - click>=8.1
           - ortools>=9.10
+          - rich>=13.7
         args: [--config-file=pyproject.toml]
         files: ^src/
