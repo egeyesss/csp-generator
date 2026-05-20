@@ -141,10 +141,9 @@ def test_question_category_not_overpinned_4x4(seed: int) -> None:
     qt_cat, _ = puzzle.question
     pa_on_qt = sum(1 for c in puzzle.clues if _pa_touches_category(c, qt_cat))
     cap = theme.size - 2
-    assert pa_on_qt <= cap, (
-        f"restaurant seed={seed}: {pa_on_qt} PAs touch question category "
-        f"{qt_cat!r}, cap is {cap}"
-    )
+    assert (
+        pa_on_qt <= cap
+    ), f"restaurant seed={seed}: {pa_on_qt} PAs touch question category {qt_cat!r}, cap is {cap}"
 
 
 @pytest.mark.parametrize("seed", [0, 1, 7, 42])
@@ -156,6 +155,6 @@ def test_question_category_not_overpinned_5x5(seed: int) -> None:
     qt_cat, _ = puzzle.question
     pa_on_qt = sum(1 for c in puzzle.clues if _pa_touches_category(c, qt_cat))
     cap = theme.size - 2
-    assert pa_on_qt <= cap, (
-        f"office seed={seed}: {pa_on_qt} PAs touch question category " f"{qt_cat!r}, cap is {cap}"
-    )
+    assert (
+        pa_on_qt <= cap
+    ), f"office seed={seed}: {pa_on_qt} PAs touch question category {qt_cat!r}, cap is {cap}"

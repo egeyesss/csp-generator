@@ -101,6 +101,12 @@ def _cap_category_pas(
 
     Each removal must preserve uniqueness and (if `protect_ref` is set) keep
     the protected `(category, value)` reference alive somewhere.
+
+    Best-effort: if every touching PA is load-bearing (removing any one
+    breaks uniqueness or orphans `protect_ref`) the pass returns with the
+    cap unmet rather than crashing. Same semantics as `_destack_pa`; the
+    integration tests in `test_selection_quality.py` catch real regressions
+    where the cap goes consistently unmet across seeds.
     """
     while True:
         touching = [
@@ -210,7 +216,7 @@ def select_minimum_clues(
             theme,
             rng,
             question_category=question_category,
-            max_pa=theme.size - 2,
+            max_pa=max(0, theme.size - 2),
             protect_ref=protect_ref,
         )
     pool = _destack_pa(
