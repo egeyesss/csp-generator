@@ -57,15 +57,20 @@ def _greedy_reduce(
     solution: Solution,
     theme: Theme,
     rng: random.Random,
+    protect_ref: tuple[str, str] | None = None,
 ) -> list[Clue]:
     """Single greedy pass: order pool by removal priority, try removing each clue.
 
     A clue is dropped permanently if the remaining set still produces a
-    uniquely solvable puzzle. Returns the reduced clue list.
+    uniquely solvable puzzle and (if `protect_ref` is set) still mentions
+    that `(category, value)` reference somewhere — keeps the answer entity's
+    name from being orphaned.
     """
     current = _priority_shuffle(pool, rng)
     for clue in list(current):
         candidate = [c for c in current if c is not clue]
+        if protect_ref is not None and not any(_references(c, *protect_ref) for c in candidate):
+            continue
         probe = Puzzle(
             id="__probe__",
             theme_id=theme.id,
@@ -83,12 +88,14 @@ def _destack_pa(
     theme: Theme,
     rng: random.Random,
     max_pa_per_entity: int = 2,
+    protect_ref: tuple[str, str] | None = None,
 ) -> list[Clue]:
     """Strip PA clues from positions pinned by more than `max_pa_per_entity` of them.
 
-    Each removal must preserve uniqueness; if no over-pinning PA can be removed
-    without breaking uniqueness, the pass terminates. Saturation is recomputed
-    after every successful removal because the surplus shrinks as we strip.
+    Each removal must preserve uniqueness and (if `protect_ref` is set) keep
+    the protected `(category, value)` reference alive somewhere in the set.
+    Saturation is recomputed after every successful removal because the
+    surplus shrinks as we strip.
     """
     while True:
         pa_clues = [c for c in current if isinstance(c, PositiveAssociation)]
@@ -103,6 +110,8 @@ def _destack_pa(
         removed = False
         for clue in targets:
             candidate = [c for c in current if c is not clue]
+            if protect_ref is not None and not any(_references(c, *protect_ref) for c in candidate):
+                continue
             probe = Puzzle(
                 id="__probe__",
                 theme_id=theme.id,
@@ -124,12 +133,15 @@ def select_minimum_clues(
     rng: random.Random,
     n_restarts: int = 5,
     max_pa_per_entity: int = 2,
+    protect_ref: tuple[str, str] | None = None,
 ) -> list[Clue]:
     """Return a near-minimum subset of `pool` that still uniquely solves to `solution`.
 
-    Runs `n_restarts` greedy passes followed by a PA-destacking pass on each.
-    The first round starts from the full pool; subsequent rounds restart from
-    the previous best, so they're cheap and mostly explore different orderings.
+    Runs the PA-destacking pass once on the full pool, then `n_restarts`
+    greedy reduce passes from the destacked starting point. If `protect_ref`
+    is set, neither pass will remove the last clue mentioning that
+    `(category, value)` — used to keep the answer-bearing entity's name
+    grounded in the final clue set.
     """
     if n_restarts < 1:
         raise ValueError(f"n_restarts must be >= 1, got {n_restarts}")
@@ -138,10 +150,17 @@ def select_minimum_clues(
     # has thrown away positional cover, the surviving PAs become load-bearing
     # and can't be removed without breaking uniqueness. Destacking against the
     # full pool keeps the option open.
-    pool = _destack_pa(pool, solution, theme, rng, max_pa_per_entity=max_pa_per_entity)
-    best = _greedy_reduce(pool, solution, theme, rng)
+    pool = _destack_pa(
+        pool,
+        solution,
+        theme,
+        rng,
+        max_pa_per_entity=max_pa_per_entity,
+        protect_ref=protect_ref,
+    )
+    best = _greedy_reduce(pool, solution, theme, rng, protect_ref=protect_ref)
     for _ in range(n_restarts - 1):
-        candidate = _greedy_reduce(best, solution, theme, rng)
+        candidate = _greedy_reduce(best, solution, theme, rng, protect_ref=protect_ref)
         if len(candidate) < len(best):
             best = candidate
     return best

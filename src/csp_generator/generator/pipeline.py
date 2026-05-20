@@ -59,7 +59,18 @@ def generate(
         for c in enumerate_valid_clues(solution, theme)
         if not isinstance(c, NegativeAssociation) and (qt is None or not _is_direct_answer(c, qt))
     ]
-    clues = select_minimum_clues(pool, solution, theme, rng, n_restarts=n_restarts)
+
+    # Keep the answer-bearing entity's name in at least one clue so the player
+    # never has to "guess Ana" purely from elimination over the theme's roster.
+    protect_ref: tuple[str, str] | None = None
+    if qt is not None and "name" in theme.categories:
+        qt_cat, qt_val = qt
+        answer_pos = solution.position_of(qt_cat, qt_val)
+        protect_ref = ("name", solution.value_at("name", answer_pos))
+
+    clues = select_minimum_clues(
+        pool, solution, theme, rng, n_restarts=n_restarts, protect_ref=protect_ref
+    )
 
     puzzle = Puzzle(
         id=str(uuid.uuid4()),
