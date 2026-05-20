@@ -82,6 +82,57 @@ def _greedy_reduce(
     return current
 
 
+def _cap_category_pas(
+    current: list[Clue],
+    theme: Theme,
+    rng: random.Random,
+    question_category: str,
+    max_pa: int,
+    protect_ref: tuple[str, str] | None = None,
+) -> list[Clue]:
+    """Strip PA clues touching `question_category` until the count is <= max_pa.
+
+    Destacking caps PAs *per entity*; this caps PAs *per category*. On small
+    grids (4x4) the per-entity cap can be satisfied while three of four values
+    in the question category are still directly PA-pinned, making the answer
+    fall out by trivial elimination. Capping at `size - 2` forces at least two
+    values in that category to be reached via positional/adjacency/elimination
+    instead of direct identity — which forces the spatial clues to fire.
+
+    Each removal must preserve uniqueness and (if `protect_ref` is set) keep
+    the protected `(category, value)` reference alive somewhere.
+    """
+    while True:
+        touching = [
+            c
+            for c in current
+            if isinstance(c, PositiveAssociation)
+            and (c.category_a == question_category or c.category_b == question_category)
+        ]
+        if len(touching) <= max_pa:
+            return current
+        ordered = list(touching)
+        rng.shuffle(ordered)
+
+        removed = False
+        for clue in ordered:
+            candidate = [c for c in current if c is not clue]
+            if protect_ref is not None and not any(_references(c, *protect_ref) for c in candidate):
+                continue
+            probe = Puzzle(
+                id="__probe__",
+                theme_id=theme.id,
+                size=theme.size,
+                clues=candidate,
+            )
+            if is_uniquely_solvable(probe, theme):
+                current = candidate
+                removed = True
+                break
+        if not removed:
+            return current
+
+
 def _destack_pa(
     current: list[Clue],
     solution: Solution,
@@ -134,22 +185,34 @@ def select_minimum_clues(
     n_restarts: int = 5,
     max_pa_per_entity: int = 2,
     protect_ref: tuple[str, str] | None = None,
+    question_category: str | None = None,
 ) -> list[Clue]:
     """Return a near-minimum subset of `pool` that still uniquely solves to `solution`.
 
-    Runs the PA-destacking pass once on the full pool, then `n_restarts`
-    greedy reduce passes from the destacked starting point. If `protect_ref`
-    is set, neither pass will remove the last clue mentioning that
-    `(category, value)` — used to keep the answer-bearing entity's name
-    grounded in the final clue set.
+    Three passes, in order:
+      1. `_cap_category_pas` — caps PA clues touching the question category
+         at `theme.size - 2` (so at least two values in that category must
+         be deduced spatially, not via direct identity).
+      2. `_destack_pa` — caps PA clues per entity at `max_pa_per_entity`.
+      3. `_greedy_reduce` repeated `n_restarts` times — strips remaining redundancy.
+
+    All three respect `protect_ref` so the answer-bearing entity's name is
+    never orphaned. The category cap and destacking run on the full pool
+    so the positional clues that "cover for" the PAs are still available;
+    once greedy throws them away, the constraints become harder to honor.
     """
     if n_restarts < 1:
         raise ValueError(f"n_restarts must be >= 1, got {n_restarts}")
 
-    # Strip oversaturated PAs BEFORE the standard greedy reduce — once greedy
-    # has thrown away positional cover, the surviving PAs become load-bearing
-    # and can't be removed without breaking uniqueness. Destacking against the
-    # full pool keeps the option open.
+    if question_category is not None:
+        pool = _cap_category_pas(
+            pool,
+            theme,
+            rng,
+            question_category=question_category,
+            max_pa=theme.size - 2,
+            protect_ref=protect_ref,
+        )
     pool = _destack_pa(
         pool,
         solution,

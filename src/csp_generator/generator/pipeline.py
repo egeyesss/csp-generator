@@ -100,7 +100,13 @@ def _generate_once(theme: Theme, rng: random.Random, n_restarts: int) -> Puzzle:
         protect_ref = ("name", solution.value_at("name", answer_pos))
 
     clues = select_minimum_clues(
-        pool, solution, theme, rng, n_restarts=n_restarts, protect_ref=protect_ref
+        pool,
+        solution,
+        theme,
+        rng,
+        n_restarts=n_restarts,
+        protect_ref=protect_ref,
+        question_category=qt[0] if qt is not None else None,
     )
 
     puzzle = Puzzle(
