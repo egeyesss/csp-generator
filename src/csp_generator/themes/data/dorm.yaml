@@ -1,0 +1,48 @@
+id: dorm
+name: Freshman Hallway
+description: >
+  Five freshmen live in adjacent rooms on the same hallway. Each is in a
+  different major, plays a different sport, keeps a different snack stashed
+  in their desk, and listens to a different genre of music.
+entity_label: student
+position_label: room
+question_target:
+  - major
+  - cs
+descriptors:
+  name: "{value}"
+  major: "the {value} major"
+  sport: "the {value} player"
+  snack: "the {value} hoarder"
+  music: "the {value} fan"
+attributes:
+  name:
+    - Maya
+    - Jordan
+    - Priya
+    - Sam
+    - Theo
+  major:
+    - cs
+    - biology
+    - econ
+    - history
+    - art
+  sport:
+    - soccer
+    - basketball
+    - tennis
+    - swimming
+    - climbing
+  snack:
+    - popcorn
+    - chips
+    - chocolate
+    - granola
+    - ramen
+  music:
+    - hip-hop
+    - indie
+    - classical
+    - jazz
+    - metal

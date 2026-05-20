@@ -6,6 +6,7 @@ import click
 
 from csp_generator import __version__
 from csp_generator.cli.generate import generate_cmd
+from csp_generator.cli.review import review_cmd
 
 
 @click.group()
@@ -15,12 +16,7 @@ def main() -> None:
 
 
 main.add_command(generate_cmd, name="generate")
-
-
-@main.command()
-def review() -> None:
-    """Interactively review candidate puzzles. (Coming soon.)"""
-    click.echo("review: not implemented yet")
+main.add_command(review_cmd, name="review")
 
 
 @main.command()

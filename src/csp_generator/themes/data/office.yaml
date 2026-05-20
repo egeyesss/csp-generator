@@ -1,0 +1,48 @@
+id: office
+name: The Corner Office
+description: >
+  Five employees share a row of offices on the same floor. Each has a
+  different role, drinks something different at lunch, drives a different
+  car to work, and prefers a different coding language.
+entity_label: employee
+position_label: office
+question_target:
+  - role
+  - ceo
+descriptors:
+  name: "{value}"
+  role: "the {value}"
+  drink: "the {value} drinker"
+  car: "the {value} driver"
+  language: "the {value} developer"
+attributes:
+  name:
+    - Alice
+    - Bob
+    - Carla
+    - Dmitri
+    - Elena
+  role:
+    - intern
+    - engineer
+    - designer
+    - manager
+    - ceo
+  drink:
+    - espresso
+    - matcha
+    - cola
+    - kombucha
+    - water
+  car:
+    - Tesla
+    - Honda
+    - Ford
+    - Toyota
+    - Subaru
+  language:
+    - Python
+    - Rust
+    - TypeScript
+    - Go
+    - Java
