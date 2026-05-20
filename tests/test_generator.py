@@ -203,6 +203,42 @@ def test_generate_always_uniquely_solvable(seed: int) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Difficulty floor (opt-in)
+# ---------------------------------------------------------------------------
+
+
+def test_generate_respects_difficulty_floor(classic: Theme) -> None:
+    """A reachable floor should be honored — every returned puzzle clears it."""
+    puzzle = generate(
+        classic, rng=random.Random(0), n_restarts=1, min_difficulty=3.0, max_retries=5
+    )
+    assert puzzle.metrics is not None
+    assert puzzle.metrics.composite_difficulty is not None
+    assert puzzle.metrics.composite_difficulty >= 3.0
+
+
+def test_generate_returns_best_effort_when_floor_unreachable(classic: Theme) -> None:
+    """When the floor can't be cleared in max_retries, return the best attempt."""
+    # 9.5 is well above what 5x5 puzzles land at on this theme; the loop will
+    # exhaust max_retries and return the highest-difficulty attempt without
+    # crashing.
+    puzzle = generate(
+        classic, rng=random.Random(0), n_restarts=1, min_difficulty=9.5, max_retries=2
+    )
+    assert puzzle.metrics is not None
+    assert puzzle.metrics.composite_difficulty is not None
+    assert puzzle.solution is not None
+
+
+def test_generate_default_has_no_floor(classic: Theme) -> None:
+    """Programmatic callers shouldn't see new behavior unless they opt in."""
+    # With min_difficulty=None (the default), the loop runs once — no retries
+    # even if the puzzle's difficulty is low.
+    puzzle = generate(classic, rng=random.Random(0), n_restarts=1)
+    assert puzzle.metrics is not None
+
+
+# ---------------------------------------------------------------------------
 # Multi-theme smoke: every shipped theme can produce a valid puzzle
 # ---------------------------------------------------------------------------
 

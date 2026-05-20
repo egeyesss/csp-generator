@@ -33,12 +33,30 @@ from csp_generator.themes.loader import ThemeNotFoundError, available_themes, lo
     show_default=True,
     help="Directory to write puzzle JSON files.",
 )
+@click.option(
+    "--min-difficulty",
+    default=None,
+    type=float,
+    help=(
+        "Reject puzzles whose composite_difficulty falls below this floor; "
+        "retry up to --max-retries per candidate. Returns best effort if "
+        "the floor is unreachable."
+    ),
+)
+@click.option(
+    "--max-retries",
+    default=10,
+    show_default=True,
+    help="Retry budget per candidate when --min-difficulty is set.",
+)
 def generate_cmd(
     theme_id: str,
     count: int,
     seed: int | None,
     restarts: int,
     output_dir: str,
+    min_difficulty: float | None,
+    max_retries: int,
 ) -> None:
     """Generate candidate puzzles and write them to OUTPUT_DIR."""
     try:
@@ -51,11 +69,23 @@ def generate_cmd(
 
     rng = random.Random(seed)
     for i in range(count):
-        puzzle = _generate(theme, rng=rng, n_restarts=restarts)
+        puzzle = _generate(
+            theme,
+            rng=rng,
+            n_restarts=restarts,
+            min_difficulty=min_difficulty,
+            max_retries=max_retries,
+        )
         path = out / f"{puzzle.id}.json"
         path.write_text(puzzle.model_dump_json(indent=2), encoding="utf-8")
+        difficulty = (
+            f"{puzzle.metrics.composite_difficulty:.1f}"
+            if puzzle.metrics and puzzle.metrics.composite_difficulty is not None
+            else "?"
+        )
         click.echo(
             f"[{i + 1}/{count}] {puzzle.id}  "
             f"clues={puzzle.metrics.clue_count if puzzle.metrics else '?'}  "
+            f"difficulty={difficulty}  "
             f"→ {path}"
         )

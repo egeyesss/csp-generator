@@ -35,6 +35,8 @@ def generate(
     theme: Theme,
     rng: random.Random | None = None,
     n_restarts: int = 10,
+    min_difficulty: float | None = None,
+    max_retries: int = 10,
 ) -> Puzzle:
     """Generate a uniquely-solvable puzzle for `theme`.
 
@@ -49,9 +51,35 @@ def generate(
     Returns a Puzzle with the solution, question, and full metrics attached
     (clue count plus the tracer's deduction/branching metrics, clue variety,
     and the composite difficulty score).
+
+    If `min_difficulty` is provided, the loop retries up to `max_retries`
+    times until a puzzle's `composite_difficulty` clears the floor. Falls
+    back to the highest-difficulty attempt if none do — never returns
+    `None` or raises on unreachable floors.
     """
     if rng is None:
         rng = random.Random()
+
+    best: Puzzle | None = None
+    attempts = max_retries if min_difficulty is not None else 1
+    for _ in range(attempts):
+        puzzle = _generate_once(theme, rng, n_restarts)
+        if min_difficulty is None or _difficulty(puzzle) >= min_difficulty:
+            return puzzle
+        if best is None or _difficulty(puzzle) > _difficulty(best):
+            best = puzzle
+    assert best is not None  # min_difficulty is not None ⇒ attempts >= 1 ⇒ best set
+    return best
+
+
+def _difficulty(puzzle: Puzzle) -> float:
+    """Composite difficulty as a plain float, defaulting to -inf if unset."""
+    if puzzle.metrics is None or puzzle.metrics.composite_difficulty is None:
+        return float("-inf")
+    return puzzle.metrics.composite_difficulty
+
+
+def _generate_once(theme: Theme, rng: random.Random, n_restarts: int) -> Puzzle:
     qt = theme.question_target
     solution = generate_solution(theme, rng)
     pool: list[Clue] = [
