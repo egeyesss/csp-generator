@@ -112,3 +112,49 @@ def test_answer_grounded_in_restaurant_theme(seed: int) -> None:
     answer_name = puzzle.solution.value_at("name", answer_pos)
     grounded = any(_clue_mentions(c, "name", answer_name) for c in puzzle.clues)
     assert grounded, f"restaurant seed={seed}: {answer_name!r} never mentioned"
+
+
+# ---------------------------------------------------------------------------
+# Answer-category PA cap
+#
+# At small grid sizes, destacking's per-entity cap doesn't prevent the puzzle
+# from collapsing into trivial elimination — if N-1 values in the question's
+# category are PA-pinned to other attributes, the Nth (the answer) is forced
+# without any spatial reasoning. We cap PA clues touching the question's
+# category at `size - 2`, so at least two values must be reached via
+# positional/adjacency/elimination.
+# ---------------------------------------------------------------------------
+
+
+def _pa_touches_category(clue, category: str) -> bool:
+    return isinstance(clue, PositiveAssociation) and (
+        clue.category_a == category or clue.category_b == category
+    )
+
+
+@pytest.mark.parametrize("seed", [0, 1, 7, 42])
+def test_question_category_not_overpinned_4x4(seed: int) -> None:
+    """4x4 restaurant: PA clues touching `dessert` must be <= size - 2 = 2."""
+    theme = load_theme("restaurant")
+    puzzle = generate(theme, rng=random.Random(seed), n_restarts=3)
+    assert puzzle.question is not None
+    qt_cat, _ = puzzle.question
+    pa_on_qt = sum(1 for c in puzzle.clues if _pa_touches_category(c, qt_cat))
+    cap = theme.size - 2
+    assert (
+        pa_on_qt <= cap
+    ), f"restaurant seed={seed}: {pa_on_qt} PAs touch question category {qt_cat!r}, cap is {cap}"
+
+
+@pytest.mark.parametrize("seed", [0, 1, 7, 42])
+def test_question_category_not_overpinned_5x5(seed: int) -> None:
+    """5x5 office: PA clues touching `role` must be <= size - 2 = 3."""
+    theme = load_theme("office")
+    puzzle = generate(theme, rng=random.Random(seed), n_restarts=3)
+    assert puzzle.question is not None
+    qt_cat, _ = puzzle.question
+    pa_on_qt = sum(1 for c in puzzle.clues if _pa_touches_category(c, qt_cat))
+    cap = theme.size - 2
+    assert (
+        pa_on_qt <= cap
+    ), f"office seed={seed}: {pa_on_qt} PAs touch question category {qt_cat!r}, cap is {cap}"
