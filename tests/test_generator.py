@@ -200,3 +200,22 @@ def test_generate_always_uniquely_solvable(seed: int) -> None:
     theme = load_theme("classic_houses")
     puzzle = generate(theme, rng=random.Random(seed), n_restarts=1)
     assert is_uniquely_solvable(puzzle, theme)
+
+
+# ---------------------------------------------------------------------------
+# Multi-theme smoke: every shipped theme can produce a valid puzzle
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("theme_id", ["office", "dorm", "restaurant"])
+def test_generate_for_new_theme(theme_id: str) -> None:
+    from csp_generator.clues.templates import render
+
+    theme = load_theme(theme_id)
+    puzzle = generate(theme, rng=random.Random(0), n_restarts=1)
+    assert is_uniquely_solvable(puzzle, theme)
+    assert puzzle.question == theme.question_target
+    # Every clue should render to a non-empty sentence under the theme's descriptors.
+    for clue in puzzle.clues:
+        text = render(clue, theme)
+        assert text and text.endswith(".")

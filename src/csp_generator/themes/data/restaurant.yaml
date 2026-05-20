@@ -1,0 +1,37 @@
+id: restaurant
+name: Friday Night Out
+description: >
+  Four friends meet for dinner at a small bistro and sit in a row of booths.
+  Each orders a different entree, a different drink, and a different
+  dessert.
+entity_label: diner
+position_label: booth
+question_target:
+  - dessert
+  - tiramisu
+descriptors:
+  name: "{value}"
+  entree: "the {value} eater"
+  drink: "the {value} drinker"
+  dessert: "the {value} lover"
+attributes:
+  name:
+    - Ana
+    - Ben
+    - Cleo
+    - Diego
+  entree:
+    - steak
+    - salmon
+    - risotto
+    - burger
+  drink:
+    - wine
+    - beer
+    - lemonade
+    - tea
+  dessert:
+    - tiramisu
+    - cheesecake
+    - sorbet
+    - brownie
