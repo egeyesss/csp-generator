@@ -79,6 +79,8 @@ Question: who owns the zebra?
 17. The green house is paired with the tea drinker.
 ```
 
+I am aware that the language here does not sound natural and it will be fixed soon. "The Chesterfields smoker is paired with the red house." --> "The Chesterfields smoker lives in the red house."
+
 Note that "zebra" never appears in the clues — the answer falls out by elimination over the four named pets. That's the original Einstein flavor.
 
 The CLI also supports interactive review:
