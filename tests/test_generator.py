@@ -231,9 +231,12 @@ def test_generate_returns_best_effort_when_floor_unreachable(classic: Theme) -> 
 
 
 def test_generate_default_has_no_floor(classic: Theme) -> None:
-    """Programmatic callers shouldn't see new behavior unless they opt in."""
-    # With min_difficulty=None (the default), the loop runs once — no retries
-    # even if the puzzle's difficulty is low.
+    """Sizes without a configured floor (5x5 here) shouldn't see retry-loop
+    behavior unless the caller opts in via min_difficulty.
+
+    4x4 themes now have a size-based default floor; this test deliberately
+    uses a 5x5 theme to exercise the no-floor path.
+    """
     puzzle = generate(classic, rng=random.Random(0), n_restarts=1)
     assert puzzle.metrics is not None
 
@@ -265,10 +268,18 @@ def test_generate_4x4_applies_default_difficulty_floor() -> None:
 
 
 def test_generate_default_no_floor_on_5x5(classic: Theme) -> None:
-    """5x5 themes should not pick up the 4x4 floor — programmatic callers
-    still get a single attempt with no difficulty gating unless they opt in.
+    """5x5 themes must not pick up a size-based difficulty floor.
+
+    Catches the regression where the 4x4 floor accidentally widens to other
+    sizes. Asserted two ways: the structural check on `_SIZE_DIFFICULTY_FLOORS`
+    catches an off-by-one constant edit; the behavioral check confirms a
+    single generation attempt still completes cleanly.
     """
+    from csp_generator.generator.pipeline import _SIZE_DIFFICULTY_FLOORS
+
     assert classic.size == 5
+    assert 5 not in _SIZE_DIFFICULTY_FLOORS
+
     puzzle = generate(classic, rng=random.Random(0), n_restarts=1)
     assert puzzle.metrics is not None
     assert puzzle.metrics.composite_difficulty is not None
