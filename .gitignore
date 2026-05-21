@@ -75,6 +75,9 @@ output/exports/*
 .env.local
 *.local
 
+# Throwaway analysis scripts and their outputs
+scratch_*
+
 # AI / assistant tool artifacts (kept local, not published)
 CLAUDE.md
 .claude/
