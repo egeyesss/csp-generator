@@ -21,7 +21,13 @@ from collections import Counter
 import pytest
 
 from csp_generator.generator.pipeline import generate
-from csp_generator.models import PositiveAssociation, Solution, Theme
+from csp_generator.models import (
+    AbsolutePosition,
+    ImmediateLeftOf,
+    PositiveAssociation,
+    Solution,
+    Theme,
+)
 from csp_generator.themes.loader import load_theme
 
 _MAX_PA_PER_ENTITY = 2
@@ -158,3 +164,54 @@ def test_question_category_not_overpinned_5x5(seed: int) -> None:
     assert (
         pa_on_qt <= cap
     ), f"office seed={seed}: {pa_on_qt} PAs touch question category {qt_cat!r}, cap is {cap}"
+
+
+# ---------------------------------------------------------------------------
+# Type caps — mirror Einstein's clue-type ratios
+#
+# Einstein's puzzle has exactly 1 ImmediateLeftOf and 2 AbsolutePosition out
+# of 15 clues. Without per-type caps, ImmediateLeftOf is strictly stronger
+# than Adjacency and AbsolutePosition, so greedy reduction strips the weaker
+# spatial types and collapses the puzzle into a PA + ImmediateLeftOf
+# monoculture. The caps keep the spatial vocabulary mixed.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("theme_id", ["classic_houses", "office", "dorm", "restaurant"])
+@pytest.mark.parametrize("seed", [0, 1, 7])
+def test_immediate_left_of_capped_at_one(theme_id: str, seed: int) -> None:
+    """At most 1 ImmediateLeftOf per puzzle on every theme — matches Einstein."""
+    theme = load_theme(theme_id)
+    puzzle = generate(theme, rng=random.Random(seed), n_restarts=3)
+    count = sum(1 for c in puzzle.clues if isinstance(c, ImmediateLeftOf))
+    assert count <= 1, f"{theme_id} seed={seed}: {count} ImmediateLeftOf clues, cap is 1"
+
+
+@pytest.mark.parametrize("theme_id", ["classic_houses", "office", "dorm", "restaurant"])
+@pytest.mark.parametrize("seed", [0, 1, 7])
+def test_absolute_position_capped_at_two(theme_id: str, seed: int) -> None:
+    """At most 2 AbsolutePosition clues per puzzle — matches Einstein."""
+    theme = load_theme(theme_id)
+    puzzle = generate(theme, rng=random.Random(seed), n_restarts=3)
+    count = sum(1 for c in puzzle.clues if isinstance(c, AbsolutePosition))
+    assert count <= 2, f"{theme_id} seed={seed}: {count} AbsolutePosition clues, cap is 2"
+
+
+@pytest.mark.parametrize("theme_id", ["classic_houses", "office", "dorm", "restaurant"])
+def test_spatial_vocabulary_is_mixed(theme_id: str) -> None:
+    """Across a batch, all three capped types (ILo, AbsPos, Adj) should appear.
+
+    Tests the *aggregate* — a single puzzle may miss one type, but generating
+    a handful with different seeds should hit at least one occurrence of each.
+    Pre-cap behavior was 0 Adj and 0 AbsPos across hundreds of puzzles.
+    """
+    theme = load_theme(theme_id)
+    type_counts: Counter[str] = Counter()
+    for seed in range(10):
+        puzzle = generate(theme, rng=random.Random(seed), n_restarts=3)
+        type_counts.update(c.type for c in puzzle.clues)
+    for clue_type in ("adjacency", "absolute_position", "immediate_left_of"):
+        assert type_counts[clue_type] > 0, (
+            f"{theme_id}: {clue_type} never appears across 10 seeds "
+            f"(distribution: {dict(type_counts)})"
+        )
