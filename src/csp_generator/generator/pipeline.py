@@ -20,6 +20,13 @@ from csp_generator.models import (
 )
 from csp_generator.solver.propagator import trace
 
+# Size-based difficulty floors applied when the caller does not pass an
+# explicit min_difficulty. 4x4 puzzles without a floor collapse onto a
+# bimodal distribution where roughly half the runs land in the trivial
+# (hypothesis_depth=0) cluster; the floor pushes generation into the
+# harder cluster that actually takes ~5 minutes to solve.
+_SIZE_DIFFICULTY_FLOORS: dict[int, float] = {4: 3.5}
+
 
 def _is_direct_answer(clue: Clue, question_target: tuple[str, str]) -> bool:
     """True if this PA clue directly states the question answer."""
@@ -56,7 +63,12 @@ def generate(
     times until a puzzle's `composite_difficulty` clears the floor. Falls
     back to the highest-difficulty attempt if none do — never returns
     `None` or raises on unreachable floors.
+
+    If `min_difficulty` is left unset, a size-based default may apply (see
+    `_SIZE_DIFFICULTY_FLOORS`). Pass `min_difficulty=0.0` to opt out.
     """
+    if min_difficulty is None:
+        min_difficulty = _SIZE_DIFFICULTY_FLOORS.get(theme.size)
     if min_difficulty is not None and max_retries < 1:
         raise ValueError(f"max_retries must be >= 1 when min_difficulty is set, got {max_retries}")
     if rng is None:

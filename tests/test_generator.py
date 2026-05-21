@@ -231,9 +231,12 @@ def test_generate_returns_best_effort_when_floor_unreachable(classic: Theme) -> 
 
 
 def test_generate_default_has_no_floor(classic: Theme) -> None:
-    """Programmatic callers shouldn't see new behavior unless they opt in."""
-    # With min_difficulty=None (the default), the loop runs once — no retries
-    # even if the puzzle's difficulty is low.
+    """Sizes without a configured floor (5x5 here) shouldn't see retry-loop
+    behavior unless the caller opts in via min_difficulty.
+
+    4x4 themes now have a size-based default floor; this test deliberately
+    uses a 5x5 theme to exercise the no-floor path.
+    """
     puzzle = generate(classic, rng=random.Random(0), n_restarts=1)
     assert puzzle.metrics is not None
 
@@ -242,6 +245,44 @@ def test_generate_rejects_nonpositive_max_retries(classic: Theme) -> None:
     """max_retries < 1 with a floor set should raise cleanly, not assert."""
     with pytest.raises(ValueError, match="max_retries"):
         generate(classic, rng=random.Random(0), n_restarts=1, min_difficulty=5.0, max_retries=0)
+
+
+def test_generate_4x4_applies_default_difficulty_floor() -> None:
+    """4x4 themes should default to min_difficulty=3.5 so generated puzzles
+    don't fall into the trivial cluster (d < 3.0, hypothesis_depth == 0).
+
+    Based on the batch analysis on `restaurant`, ~38% of unfiltered runs land
+    in [3.5, 4.5] and ~48% land in [3.5, 5.0]. With max_retries=10 (the CLI
+    default), clearing 3.5 is near-certain in practice.
+    """
+    restaurant = load_theme("restaurant")
+    assert restaurant.size == 4
+
+    # Seed 3 was verified to produce d=2.36 on a single attempt (no retry),
+    # well below the 3.5 floor. If the default is wired in correctly, the
+    # retry loop will resample until a higher-difficulty puzzle is found.
+    puzzle = generate(restaurant, rng=random.Random(3), n_restarts=1)
+    assert puzzle.metrics is not None
+    assert puzzle.metrics.composite_difficulty is not None
+    assert puzzle.metrics.composite_difficulty >= 3.5
+
+
+def test_generate_default_no_floor_on_5x5(classic: Theme) -> None:
+    """5x5 themes must not pick up a size-based difficulty floor.
+
+    Catches the regression where the 4x4 floor accidentally widens to other
+    sizes. Asserted two ways: the structural check on `_SIZE_DIFFICULTY_FLOORS`
+    catches an off-by-one constant edit; the behavioral check confirms a
+    single generation attempt still completes cleanly.
+    """
+    from csp_generator.generator.pipeline import _SIZE_DIFFICULTY_FLOORS
+
+    assert classic.size == 5
+    assert 5 not in _SIZE_DIFFICULTY_FLOORS
+
+    puzzle = generate(classic, rng=random.Random(0), n_restarts=1)
+    assert puzzle.metrics is not None
+    assert puzzle.metrics.composite_difficulty is not None
 
 
 def test_generate_cli_rejects_zero_max_retries() -> None:
