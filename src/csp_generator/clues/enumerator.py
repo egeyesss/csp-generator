@@ -192,7 +192,7 @@ def _enumerate_relative(solution: Solution, theme: Theme) -> list[Clue]:
 
 
 def enumerate_valid_clues(solution: Solution, theme: Theme) -> list[Clue]:
-    """Every PA / NA / AbsPos / Adj / RP clue true under `solution`.
+    """Every PA / NA / AbsPos / Adj / RP / ImmediateLeftOf clue true under `solution`.
 
     Disjunction and Conditional enumeration is intentionally omitted here —
     those families are combinatorially large and don't have a canonical
