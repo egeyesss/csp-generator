@@ -5,9 +5,9 @@ filtering down to a minimum sufficient clue set. This module produces the
 *pool* the filter operates on: every clue, across every type, whose statement
 is true under the supplied solution.
 
-For Week 2, enumeration is exhaustive for the bounded clue types
-(PositiveAssociation, NegativeAssociation, AbsolutePosition, Adjacency,
-RelativePosition). Disjunction and Conditional admit combinatorial families
+Enumeration is exhaustive for the bounded clue types (PositiveAssociation,
+NegativeAssociation, AbsolutePosition, Adjacency, RelativePosition,
+ImmediateLeftOf). Disjunction and Conditional admit combinatorial families
 without a single "canonical" enumeration; richer enumeration for those will
 land alongside the minimum-clue-set selection in Week 3 if useful.
 """
@@ -22,6 +22,7 @@ from csp_generator.models import (
     Clue,
     Conditional,
     Disjunction,
+    ImmediateLeftOf,
     NegativeAssociation,
     PositiveAssociation,
     RelativePosition,
@@ -61,6 +62,11 @@ def is_satisfied_by(clue: Clue, solution: Solution) -> bool:
     if isinstance(clue, RelativePosition):
         return _pos(solution, clue.category_a, clue.value_a) < _pos(
             solution, clue.category_b, clue.value_b
+        )
+    if isinstance(clue, ImmediateLeftOf):
+        return (
+            _pos(solution, clue.category_b, clue.value_b)
+            == _pos(solution, clue.category_a, clue.value_a) + 1
         )
     if isinstance(clue, Disjunction):
         target = _pos(solution, clue.category_a, clue.value_a)
@@ -139,6 +145,26 @@ def _enumerate_adjacency(solution: Solution, theme: Theme) -> list[Clue]:
     return out
 
 
+def _enumerate_immediate_left(solution: Solution, theme: Theme) -> list[Clue]:
+    """Ordered pairs of distinct cells where pos_b == pos_a + 1."""
+    out: list[Clue] = []
+    cells: list[tuple[str, str]] = [
+        (cat, val) for cat in sorted(theme.categories) for val in theme.attributes[cat]
+    ]
+    for (cat_a, val_a), (cat_b, val_b) in combinations(cells, 2):
+        pa = _pos(solution, cat_a, val_a)
+        pb = _pos(solution, cat_b, val_b)
+        if pb == pa + 1:
+            out.append(
+                ImmediateLeftOf(category_a=cat_a, value_a=val_a, category_b=cat_b, value_b=val_b)
+            )
+        elif pa == pb + 1:
+            out.append(
+                ImmediateLeftOf(category_a=cat_b, value_a=val_b, category_b=cat_a, value_b=val_a)
+            )
+    return out
+
+
 def _enumerate_relative(solution: Solution, theme: Theme) -> list[Clue]:
     """Ordered pairs of distinct cells where pos_a < pos_b.
 
@@ -183,6 +209,7 @@ def enumerate_valid_clues(solution: Solution, theme: Theme) -> list[Clue]:
         + _enumerate_absolute(solution, theme)
         + _enumerate_adjacency(solution, theme)
         + _enumerate_relative(solution, theme)
+        + _enumerate_immediate_left(solution, theme)
     )
 
 

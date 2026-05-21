@@ -24,6 +24,7 @@ from csp_generator.models import (
     Clue,
     Conditional,
     Disjunction,
+    ImmediateLeftOf,
     NegativeAssociation,
     PositiveAssociation,
     RelativePosition,
@@ -165,6 +166,36 @@ def test_relative_position_resolves_partner_when_one_side_pinned() -> None:
     clue = RelativePosition(category_a="color", value_a="red", category_b="pet", value_b="dog")
     assert propagate(clue, state) is True
     assert state.resolved_position("pet", "dog") == 2
+
+
+# ---------------------------------------------------------------------------
+# ImmediateLeftOf: pos_b == pos_a + 1
+# ---------------------------------------------------------------------------
+
+
+def test_immediate_left_of_strips_endpoints() -> None:
+    state = fresh()
+    clue = ImmediateLeftOf(category_a="color", value_a="red", category_b="pet", value_b="dog")
+    assert propagate(clue, state) is True
+    # red can't be at the rightmost slot; dog can't be at the leftmost.
+    assert state.possible("color", "red") == frozenset({0, 1})
+    assert state.possible("pet", "dog") == frozenset({1, 2})
+
+
+def test_immediate_left_of_pins_partner_when_one_side_resolved() -> None:
+    state = fresh()
+    state.pin("color", "red", 1)
+    clue = ImmediateLeftOf(category_a="color", value_a="red", category_b="pet", value_b="dog")
+    assert propagate(clue, state) is True
+    assert state.resolved_position("pet", "dog") == 2
+
+
+def test_immediate_left_of_no_change_while_both_open_only_at_endpoints() -> None:
+    """Once endpoints have been stripped, applying the clue again is a no-op."""
+    state = fresh()
+    clue = ImmediateLeftOf(category_a="color", value_a="red", category_b="pet", value_b="dog")
+    propagate(clue, state)
+    assert propagate(clue, state) is False
 
 
 # ---------------------------------------------------------------------------

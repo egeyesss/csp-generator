@@ -21,6 +21,7 @@ from csp_generator.models import (
     Clue,
     Conditional,
     Disjunction,
+    ImmediateLeftOf,
     NegativeAssociation,
     PositiveAssociation,
     Puzzle,
@@ -222,12 +223,16 @@ def test_clue_union_round_trips_new_types() -> None:
                 then_category_b="cigarette",
                 then_value_b="Old Gold",
             ),
+            ImmediateLeftOf(
+                category_a="color", value_a="ivory", category_b="color", value_b="green"
+            ),
         ],
     )
     reloaded = Puzzle.model_validate(puzzle.model_dump())
     assert reloaded == puzzle
     assert isinstance(reloaded.clues[0], Disjunction)
     assert isinstance(reloaded.clues[1], Conditional)
+    assert isinstance(reloaded.clues[2], ImmediateLeftOf)
 
 
 # ---------------------------------------------------------------------------
@@ -271,6 +276,12 @@ def test_render_relative_position() -> None:
         category_a="color", value_a="ivory", category_b="color", value_b="green"
     )
     assert render(clue, theme) == "The ivory house is somewhere to the left of the green house."
+
+
+def test_render_immediate_left_of() -> None:
+    theme = load_theme("classic_houses")
+    clue = ImmediateLeftOf(category_a="color", value_a="ivory", category_b="color", value_b="green")
+    assert render(clue, theme) == "The ivory house is directly to the left of the green house."
 
 
 def test_render_disjunction() -> None:
@@ -401,6 +412,29 @@ def test_is_satisfied_by_relative_position() -> None:
     )
 
 
+def test_is_satisfied_by_immediate_left_of() -> None:
+    # Ivory (pos 3) is directly to the left of green (pos 4).
+    assert is_satisfied_by(
+        ImmediateLeftOf(category_a="color", value_a="ivory", category_b="color", value_b="green"),
+        _ZEBRA_SOLUTION,
+    )
+    # Norwegian (pos 0) is to the left of milk (pos 2), but not directly so.
+    assert not is_satisfied_by(
+        ImmediateLeftOf(
+            category_a="nationality",
+            value_a="Norwegian",
+            category_b="drink",
+            value_b="milk",
+        ),
+        _ZEBRA_SOLUTION,
+    )
+    # Direction matters: swapping the two yields a false statement.
+    assert not is_satisfied_by(
+        ImmediateLeftOf(category_a="color", value_a="green", category_b="color", value_b="ivory"),
+        _ZEBRA_SOLUTION,
+    )
+
+
 def test_is_satisfied_by_disjunction() -> None:
     # Dog is at pos 3 (Spaniard); Norwegian is at pos 0. Disjunction holds.
     assert is_satisfied_by(
@@ -498,7 +532,23 @@ def test_enumerate_valid_clues_covers_every_bounded_type() -> None:
         "absolute_position",
         "adjacency",
         "relative_position",
+        "immediate_left_of",
     } <= types
+
+
+def test_enumerate_includes_ivory_immediately_left_of_green() -> None:
+    """The canonical Einstein clue should fall out of the enumerator."""
+    theme = load_theme("classic_houses")
+    clues = enumerate_valid_clues(_ZEBRA_SOLUTION, theme)
+    expected = ImmediateLeftOf(
+        category_a="color", value_a="ivory", category_b="color", value_b="green"
+    )
+    assert expected in clues
+    # The swapped direction must not appear — pos_b == pos_a + 1 is directional.
+    swapped = ImmediateLeftOf(
+        category_a="color", value_a="green", category_b="color", value_b="ivory"
+    )
+    assert swapped not in clues
 
 
 def test_enumerate_counts_match_combinatorics() -> None:

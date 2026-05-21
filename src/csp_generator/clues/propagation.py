@@ -19,6 +19,7 @@ from csp_generator.models import (
     Clue,
     Conditional,
     Disjunction,
+    ImmediateLeftOf,
     NegativeAssociation,
     PositiveAssociation,
     RelativePosition,
@@ -96,6 +97,29 @@ def _propagate_relative(clue: RelativePosition, state: PossibilityState) -> bool
             changed |= state.eliminate(*a, position)
     for position in b_positions:
         if position <= earliest_a:
+            changed |= state.eliminate(*b, position)
+    return changed
+
+
+def _propagate_immediate_left(clue: ImmediateLeftOf, state: PossibilityState) -> bool:
+    """``value_a`` sits directly left of ``value_b`` (``pos_b == pos_a + 1``).
+
+    Each side narrows the other by exactly one step: ``a`` can only sit where
+    ``b`` could be at ``a+1``; ``b`` can only sit where ``a`` could be at
+    ``b-1``. Stronger than Adjacency (the direction is fixed) and stronger
+    than RelativePosition (the gap is fixed at 1).
+    """
+    a = (clue.category_a, clue.value_a)
+    b = (clue.category_b, clue.value_b)
+    a_positions = state.possible(*a)
+    b_positions = state.possible(*b)
+
+    changed = False
+    for position in a_positions:
+        if position + 1 not in b_positions:
+            changed |= state.eliminate(*a, position)
+    for position in b_positions:
+        if position - 1 not in a_positions:
             changed |= state.eliminate(*b, position)
     return changed
 
@@ -197,6 +221,8 @@ def propagate(clue: Clue, state: PossibilityState) -> bool:
         return _propagate_adjacency(clue, state)
     if isinstance(clue, RelativePosition):
         return _propagate_relative(clue, state)
+    if isinstance(clue, ImmediateLeftOf):
+        return _propagate_immediate_left(clue, state)
     if isinstance(clue, Disjunction):
         return _propagate_disjunction(clue, state)
     if isinstance(clue, Conditional):

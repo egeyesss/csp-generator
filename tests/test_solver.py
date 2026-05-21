@@ -15,6 +15,7 @@ from csp_generator.models import (
     AbsolutePosition,
     Adjacency,
     Clue,
+    ImmediateLeftOf,
     PositiveAssociation,
     Puzzle,
     RelativePosition,
@@ -107,3 +108,34 @@ def test_empty_puzzle_has_many_solutions() -> None:
     theme = load_theme("classic_houses")
     assert count_solutions(_einstein_puzzle(clues=[]), theme, limit=2) == 2
     assert is_uniquely_solvable(_einstein_puzzle(clues=[]), theme) is False
+
+
+def test_einstein_with_immediate_left_of_collapses_two_clues_to_one() -> None:
+    """One ImmediateLeftOf replaces the Adjacency+RelativePosition pair for clue 6."""
+    theme = load_theme("classic_houses")
+    clues = [
+        c
+        for c in _einstein_clues()
+        if not (
+            (isinstance(c, Adjacency) and {c.value_a, c.value_b} == {"ivory", "green"})
+            or (isinstance(c, RelativePosition) and c.value_a == "ivory" and c.value_b == "green")
+        )
+    ]
+    clues.append(
+        ImmediateLeftOf(category_a="color", value_a="ivory", category_b="color", value_b="green")
+    )
+    sol = solve(_einstein_puzzle(clues), theme)
+    assert sol is not None
+    assert sol.assignments == _EXPECTED_SOLUTION
+    assert is_uniquely_solvable(_einstein_puzzle(clues), theme) is True
+
+
+def test_immediate_left_of_rejects_swapped_direction() -> None:
+    """ImmediateLeftOf is directional: pinning b to the rightmost slot leaves
+    no room for a one further right, so the puzzle is unsatisfiable."""
+    theme = load_theme("classic_houses")
+    clues: list[Clue] = [
+        ImmediateLeftOf(category_a="color", value_a="ivory", category_b="color", value_b="green"),
+        AbsolutePosition(category="color", value="ivory", position=4),
+    ]
+    assert solve(_einstein_puzzle(clues), theme) is None

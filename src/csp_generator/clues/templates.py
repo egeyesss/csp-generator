@@ -21,6 +21,7 @@ from csp_generator.models import (
     Clue,
     Conditional,
     Disjunction,
+    ImmediateLeftOf,
     NegativeAssociation,
     PositiveAssociation,
     RelativePosition,
@@ -65,6 +66,10 @@ def render(clue: Clue, theme: Theme) -> str:
         a = _noun(theme, clue.category_a, clue.value_a)
         b = _noun(theme, clue.category_b, clue.value_b)
         return _capitalize_first(f"{a} is somewhere to the left of {b}.")
+    if isinstance(clue, ImmediateLeftOf):
+        a = _noun(theme, clue.category_a, clue.value_a)
+        b = _noun(theme, clue.category_b, clue.value_b)
+        return _capitalize_first(f"{a} is directly to the left of {b}.")
     if isinstance(clue, Disjunction):
         a = _noun(theme, clue.category_a, clue.value_a)
         opts = _join_options(theme, clue.options)

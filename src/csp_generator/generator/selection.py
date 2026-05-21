@@ -18,6 +18,7 @@ from csp_generator.models import (
     Clue,
     Conditional,
     Disjunction,
+    ImmediateLeftOf,
     NegativeAssociation,
     PositiveAssociation,
     Puzzle,
@@ -29,16 +30,16 @@ from csp_generator.solver.ortools_solver import is_uniquely_solvable
 
 # Lower value → try to remove first (cheapest / most redundant clues).
 # RelPos and AbsPos are the most numerous; PA is the most informative and
-# hardest to drop, so we leave it for last. This ordering makes the greedy
-# pass strip redundant positional clues while PA clues are still present to
-# cover them — the result skews toward a PA-heavy, RelPos-light clue set
-# that reads like a natural zebra puzzle.
+# hardest to drop, so we leave it for last. ImmediateLeftOf sits just below
+# PA — it's the strongest spatial clue (fixed gap *and* direction) and is
+# scarce in real puzzles, so we want to keep it whenever the reducer can.
 _REMOVAL_PRIORITY: dict[str, int] = {
     "relative_position": 0,
     "absolute_position": 1,
     "adjacency": 2,
     "negative_association": 3,
-    "positive_association": 4,
+    "immediate_left_of": 4,
+    "positive_association": 5,
 }
 
 
@@ -243,7 +244,10 @@ def select_minimum_clues(
 def _references(clue: Clue, category: str, value: str) -> bool:
     """True if `(category, value)` appears anywhere in the clue's fields."""
     target = (category, value)
-    if isinstance(clue, PositiveAssociation | NegativeAssociation | Adjacency | RelativePosition):
+    if isinstance(
+        clue,
+        PositiveAssociation | NegativeAssociation | Adjacency | RelativePosition | ImmediateLeftOf,
+    ):
         return target in {(clue.category_a, clue.value_a), (clue.category_b, clue.value_b)}
     if isinstance(clue, AbsolutePosition):
         return (clue.category, clue.value) == target
