@@ -28,6 +28,7 @@ from csp_generator.models import (
     Clue,
     Conditional,
     Disjunction,
+    ImmediateLeftOf,
     NegativeAssociation,
     PositiveAssociation,
     Puzzle,
@@ -53,7 +54,10 @@ def _validate_clue_refs(clue: Clue, theme: Theme) -> None:
         if value not in theme.attributes[category]:
             raise ValueError(f"clue references unknown value {value!r} in category {category!r}")
 
-    if isinstance(clue, PositiveAssociation | NegativeAssociation | Adjacency | RelativePosition):
+    if isinstance(
+        clue,
+        PositiveAssociation | NegativeAssociation | Adjacency | RelativePosition | ImmediateLeftOf,
+    ):
         check(clue.category_a, clue.value_a)
         check(clue.category_b, clue.value_b)
     elif isinstance(clue, AbsolutePosition):
@@ -96,6 +100,8 @@ def _apply_clue(
         model.add_bool_or([left, right])
     elif isinstance(clue, RelativePosition):
         model.add(pos[clue.category_a][clue.value_a] < pos[clue.category_b][clue.value_b])
+    elif isinstance(clue, ImmediateLeftOf):
+        model.add(pos[clue.category_b][clue.value_b] == pos[clue.category_a][clue.value_a] + 1)
     elif isinstance(clue, Disjunction):
         # At least one of the options must coincide with (category_a, value_a).
         target = pos[clue.category_a][clue.value_a]

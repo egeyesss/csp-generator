@@ -187,6 +187,22 @@ class RelativePosition(_ClueBase):
     value_b: str
 
 
+class ImmediateLeftOf(_ClueBase):
+    """`value_a` is directly to the left of `value_b` (pos_b == pos_a + 1).
+
+    The strict-adjacency, directional sibling of `RelativePosition`. Einstein's
+    "the green house is immediately to the right of the ivory house" is the
+    canonical example: it's not "somewhere to the left of" and not just
+    "adjacent to" — it's one step to the left, in that order.
+    """
+
+    type: Literal["immediate_left_of"] = "immediate_left_of"
+    category_a: str
+    value_a: str
+    category_b: str
+    value_b: str
+
+
 class Disjunction(_ClueBase):
     """`(category_a, value_a)` shares a position with one of `options`.
 
@@ -231,6 +247,7 @@ Clue = Annotated[
     | AbsolutePosition
     | Adjacency
     | RelativePosition
+    | ImmediateLeftOf
     | Disjunction
     | Conditional,
     Field(discriminator="type"),
