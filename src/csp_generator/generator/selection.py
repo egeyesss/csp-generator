@@ -38,7 +38,10 @@ from csp_generator.solver.ortools_solver import is_uniquely_solvable
 # together so the reducer doesn't strip one type wholesale in favor of
 # another; combined with the per-type caps below this preserves a mixed
 # spatial vocabulary instead of collapsing to whichever type is strongest.
-# RelativePosition is intentionally lowest: the Einstein puzzle has none.
+# RelativePosition and NegativeAssociation are intentionally lowest: the
+# Einstein puzzle uses neither (NA is also currently absent from the
+# enumerator), so they're stripped before any spatial type the reducer
+# wants to keep.
 _REMOVAL_PRIORITY: dict[str, int] = {
     "relative_position": 0,
     "negative_association": 1,
@@ -106,44 +109,19 @@ def _cap_category_pas(
     values in that category to be reached via positional/adjacency/elimination
     instead of direct identity — which forces the spatial clues to fire.
 
-    Each removal must preserve uniqueness and (if `protect_ref` is set) keep
-    the protected `(category, value)` reference alive somewhere.
-
-    Best-effort: if every touching PA is load-bearing (removing any one
-    breaks uniqueness or orphans `protect_ref`) the pass returns with the
-    cap unmet rather than crashing. Same semantics as `_destack_pa`; the
-    integration tests in `test_selection_quality.py` catch real regressions
-    where the cap goes consistently unmet across seeds.
+    Best-effort with the same semantics as `_cap_clue_count` (uniqueness
+    preserved, `protect_ref` honored, cap may go unmet if every touching
+    PA is load-bearing).
     """
-    while True:
-        touching = [
-            c
-            for c in current
-            if isinstance(c, PositiveAssociation)
-            and (c.category_a == question_category or c.category_b == question_category)
-        ]
-        if len(touching) <= max_pa:
-            return current
-        ordered = list(touching)
-        rng.shuffle(ordered)
-
-        removed = False
-        for clue in ordered:
-            candidate = [c for c in current if c is not clue]
-            if protect_ref is not None and not any(_references(c, *protect_ref) for c in candidate):
-                continue
-            probe = Puzzle(
-                id="__probe__",
-                theme_id=theme.id,
-                size=theme.size,
-                clues=candidate,
-            )
-            if is_uniquely_solvable(probe, theme):
-                current = candidate
-                removed = True
-                break
-        if not removed:
-            return current
+    return _cap_clue_count(
+        current,
+        theme,
+        rng,
+        predicate=lambda c: isinstance(c, PositiveAssociation)
+        and (c.category_a == question_category or c.category_b == question_category),
+        max_count=max_pa,
+        protect_ref=protect_ref,
+    )
 
 
 def _cap_clue_count(

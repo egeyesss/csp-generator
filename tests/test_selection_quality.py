@@ -197,7 +197,7 @@ def test_absolute_position_capped_at_two(theme_id: str, seed: int) -> None:
     assert count <= 2, f"{theme_id} seed={seed}: {count} AbsolutePosition clues, cap is 2"
 
 
-@pytest.mark.parametrize("theme_id", ["classic_houses", "restaurant"])
+@pytest.mark.parametrize("theme_id", ["classic_houses", "office", "dorm", "restaurant"])
 def test_spatial_vocabulary_is_mixed(theme_id: str) -> None:
     """Across a batch, all three capped types (ILo, AbsPos, Adj) should appear.
 
