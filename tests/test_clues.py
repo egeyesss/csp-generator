@@ -240,15 +240,57 @@ def test_clue_union_round_trips_new_types() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_render_positive_association() -> None:
+def test_render_positive_association_uses_category_predicate() -> None:
+    """PA with a category that has a `predicate` uses it; the other side is subject."""
     theme = load_theme("classic_houses")
     clue = PositiveAssociation(
         category_a="nationality", value_a="Englishman", category_b="color", value_b="red"
     )
-    assert render(clue, theme) == "The Englishman is paired with the red house."
+    assert render(clue, theme) == "The Englishman lives in the red house."
 
 
-def test_render_negative_association() -> None:
+def test_render_positive_association_is_argument_order_symmetric() -> None:
+    """Swapping category_a/category_b in the model produces the same English."""
+    theme = load_theme("classic_houses")
+    swapped = PositiveAssociation(
+        category_a="color", value_a="red", category_b="nationality", value_b="Englishman"
+    )
+    assert render(swapped, theme) == "The Englishman lives in the red house."
+
+
+def test_render_positive_association_picks_subject_by_category_order() -> None:
+    """When both categories have predicates, the one earlier in theme.categories
+    becomes the subject. classic_houses orders categories so the earlier of
+    (drink, pet) is `drink`; PA(drink=coffee, pet=dog) → coffee drinker as subject.
+    """
+    theme = load_theme("classic_houses")
+    clue = PositiveAssociation(
+        category_a="drink", value_a="coffee", category_b="pet", value_b="dog"
+    )
+    assert render(clue, theme) == "The coffee drinker owns the dog."
+
+
+def test_render_positive_association_falls_back_to_copula_without_predicate() -> None:
+    """A theme without a predicate for either side falls back to copula `is`."""
+    from csp_generator.models import Theme
+
+    theme = Theme(
+        id="copula",
+        name="Copula",
+        entity_label="slot",
+        attributes={"x": ["a", "b", "c"], "y": ["1", "2", "3"]},
+        descriptors={"x": "the {value} thing", "y": "the {value} number"},
+    )
+    clue = PositiveAssociation(category_a="x", value_a="a", category_b="y", value_b="1")
+    assert render(clue, theme) == "The a thing is the 1 number."
+
+
+def test_render_negative_association_uses_neutral_phrasing() -> None:
+    """NA stays neutral — a copula would read as a category error when one side
+    is a location ("The Englishman is not the red house"). NA isn't enumerated
+    by the generator today, so the neutral form is the right minimum-cost
+    default until a generated puzzle actually needs negated predicates.
+    """
     theme = load_theme("classic_houses")
     clue = NegativeAssociation(
         category_a="nationality", value_a="Englishman", category_b="color", value_b="red"
@@ -256,18 +298,19 @@ def test_render_negative_association() -> None:
     assert render(clue, theme) == "The Englishman is not paired with the red house."
 
 
-def test_render_absolute_position_uses_one_based_position() -> None:
+def test_render_absolute_position_uses_position_label() -> None:
+    """`X is at position N` → `X is in <position_label> N`, 1-indexed."""
     theme = load_theme("classic_houses")
     clue = AbsolutePosition(category="nationality", value="Norwegian", position=0)
-    assert render(clue, theme) == "The Norwegian is at position 1."
+    assert render(clue, theme) == "The Norwegian is in house 1."
 
 
-def test_render_adjacency() -> None:
+def test_render_adjacency_uses_next_to() -> None:
     theme = load_theme("classic_houses")
     clue = Adjacency(
         category_a="cigarette", value_a="Chesterfields", category_b="pet", value_b="fox"
     )
-    assert render(clue, theme) == "The Chesterfields smoker is adjacent to the fox owner."
+    assert render(clue, theme) == "The Chesterfields smoker is next to the fox owner."
 
 
 def test_render_relative_position() -> None:
@@ -291,8 +334,8 @@ def test_render_disjunction() -> None:
         value_a="dog",
         options=[("nationality", "Spaniard"), ("nationality", "Norwegian")],
     )
-    assert (
-        render(clue, theme) == "The dog owner is paired with one of: the Spaniard, the Norwegian."
+    assert render(clue, theme) == (
+        "The dog owner shares a house with one of: the Spaniard, the Norwegian."
     )
 
 
@@ -309,8 +352,7 @@ def test_render_conditional() -> None:
         then_value_b="Spaniard",
     )
     assert render(clue, theme) == (
-        "If the Englishman is paired with the red house, "
-        "then the dog owner is paired with the Spaniard."
+        "If the Englishman lives in the red house, then the Spaniard owns the dog."
     )
 
 
@@ -325,7 +367,16 @@ def test_render_falls_back_to_value_when_no_descriptor() -> None:
         attributes={"x": ["a", "b", "c"], "y": ["1", "2", "3"]},
     )
     clue = PositiveAssociation(category_a="x", value_a="a", category_b="y", value_b="1")
-    assert render(clue, theme) == "The a (x) is paired with the 1 (y)."
+    assert render(clue, theme) == "The a (x) is the 1 (y)."
+
+
+def test_render_office_theme_pa_uses_role_predicate() -> None:
+    """Spot-check a non-classic theme also renders naturally."""
+    theme = load_theme("office")
+    clue = PositiveAssociation(
+        category_a="name", value_a="Alice", category_b="role", value_b="engineer"
+    )
+    assert render(clue, theme) == "Alice is the engineer."
 
 
 # ---------------------------------------------------------------------------

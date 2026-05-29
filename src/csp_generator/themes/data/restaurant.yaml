@@ -10,10 +10,17 @@ question_target:
   - dessert
   - tiramisu
 descriptors:
-  name: "{value}"
-  entree: "the {value} eater"
-  drink: "the {value} drinker"
-  dessert: "the {value} lover"
+  name:
+    subject: "{value}"
+  entree:
+    subject: "the {value} eater"
+    predicate: "ordered the {value}"
+  drink:
+    subject: "the {value} drinker"
+    predicate: "drinks {value}"
+  dessert:
+    subject: "the {value} lover"
+    predicate: "got the {value} for dessert"
 attributes:
   name:
     - Ana

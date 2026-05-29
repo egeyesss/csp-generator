@@ -21,6 +21,46 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 # ---------------------------------------------------------------------------
 
 
+class CategoryDescriptor(BaseModel):
+    """Per-category rendering templates for natural-language clues.
+
+    `subject` is the noun phrase used when this category appears as the subject
+    of a clue (e.g. ``"the {value} drinker"`` or ``"the {value} house"``).
+    `predicate` is the verb phrase used when this category is the predicate of
+    a `PositiveAssociation` — ``"drinks {value}"``, ``"lives in the {value}
+    house"``. A category without a predicate falls back to a copula form
+    (``X is Y``).
+
+    `is_location` marks categories whose subject is a place rather than a
+    person — e.g. the color category in classic_houses, where the subject is
+    "the red house". When a `PositiveAssociation` involves one location and
+    one non-location category, the non-location side is chosen as the subject,
+    so we get "The Englishman lives in the red house." rather than "The red
+    house lives in the red house" or "The red house is the Englishman."
+    Spatial clues (Adjacency, RelativePosition, ImmediateLeftOf,
+    AbsolutePosition) use the subject form directly, so houses stay houses.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    subject: str = Field(min_length=1)
+    predicate: str | None = None
+    is_location: bool = False
+
+    @model_validator(mode="after")
+    def _validate(self) -> CategoryDescriptor:
+        if "{value}" not in self.subject:
+            raise ValueError(
+                f"descriptor subject must include the {{value}} placeholder, got {self.subject!r}"
+            )
+        if self.predicate is not None and "{value}" not in self.predicate:
+            raise ValueError(
+                f"descriptor predicate must include the {{value}} placeholder, "
+                f"got {self.predicate!r}"
+            )
+        return self
+
+
 class Theme(BaseModel):
     """A scenario template: the entity at each position and its attributes.
 
@@ -40,13 +80,20 @@ class Theme(BaseModel):
     entity_label: str = Field(min_length=1)
     position_label: str = "position"
     attributes: dict[str, list[str]]
-    descriptors: dict[str, str] = Field(default_factory=dict)
-    """Per-category noun-phrase template for natural-language rendering.
+    descriptors: dict[str, str | CategoryDescriptor] = Field(default_factory=dict)
+    """Per-category rendering templates for natural-language clues.
 
-    Each entry maps a category name to a Python format string containing
-    `{value}` — e.g. `"the {value} house"` for the color category. Categories
-    without a descriptor fall back to a generic `"the {value} ({category})"`
-    phrase.
+    Each entry maps a category name to either:
+    - a plain string format containing `{value}` — used as the subject noun
+      phrase only (legacy form), or
+    - a `CategoryDescriptor` with a `subject` and optional `predicate`.
+
+    The subject side of a `PositiveAssociation` is the category that comes
+    first in `theme.attributes` insertion order; the other side renders via
+    its `predicate` if one is defined, otherwise via a copula fallback.
+
+    Categories without a descriptor fall back to a generic
+    `"the {value} ({category})"` phrase.
     """
 
     question_target: tuple[str, str] | None = None
@@ -78,10 +125,10 @@ class Theme(BaseModel):
             if len(set(values)) != len(values):
                 raise ValueError(f"duplicate values in category {category!r}: {values}")
 
-        for category, template in self.descriptors.items():
+        for category, descriptor in self.descriptors.items():
             if category not in self.attributes:
                 raise ValueError(f"descriptor declared for unknown category {category!r}")
-            if "{value}" not in template:
+            if isinstance(descriptor, str) and "{value}" not in descriptor:
                 raise ValueError(
                     f"descriptor for {category!r} must include the {{value}} placeholder"
                 )

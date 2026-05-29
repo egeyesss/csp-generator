@@ -10,11 +10,20 @@ question_target:
   - role
   - ceo
 descriptors:
-  name: "{value}"
-  role: "the {value}"
-  drink: "the {value} drinker"
-  car: "the {value} driver"
-  language: "the {value} developer"
+  name:
+    subject: "{value}"
+  role:
+    subject: "the {value}"
+    predicate: "is the {value}"
+  drink:
+    subject: "the {value} drinker"
+    predicate: "drinks {value}"
+  car:
+    subject: "the {value} driver"
+    predicate: "drives a {value}"
+  language:
+    subject: "the {value} developer"
+    predicate: "codes in {value}"
 attributes:
   name:
     - Alice
