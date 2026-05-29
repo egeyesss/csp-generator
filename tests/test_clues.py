@@ -285,12 +285,17 @@ def test_render_positive_association_falls_back_to_copula_without_predicate() ->
     assert render(clue, theme) == "The a thing is the 1 number."
 
 
-def test_render_negative_association_uses_copula() -> None:
+def test_render_negative_association_uses_neutral_phrasing() -> None:
+    """NA stays neutral — a copula would read as a category error when one side
+    is a location ("The Englishman is not the red house"). NA isn't enumerated
+    by the generator today, so the neutral form is the right minimum-cost
+    default until a generated puzzle actually needs negated predicates.
+    """
     theme = load_theme("classic_houses")
     clue = NegativeAssociation(
         category_a="nationality", value_a="Englishman", category_b="color", value_b="red"
     )
-    assert render(clue, theme) == "The Englishman is not the red house."
+    assert render(clue, theme) == "The Englishman is not paired with the red house."
 
 
 def test_render_absolute_position_uses_position_label() -> None:
@@ -329,8 +334,8 @@ def test_render_disjunction() -> None:
         value_a="dog",
         options=[("nationality", "Spaniard"), ("nationality", "Norwegian")],
     )
-    assert (
-        render(clue, theme) == "The dog owner is paired with one of: the Spaniard, the Norwegian."
+    assert render(clue, theme) == (
+        "The dog owner shares a house with one of: the Spaniard, the Norwegian."
     )
 
 

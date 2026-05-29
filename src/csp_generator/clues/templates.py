@@ -130,10 +130,17 @@ def render(clue: Clue, theme: Theme) -> str:
         body = _render_pa_body(theme, clue.category_a, clue.value_a, clue.category_b, clue.value_b)
         return _capitalize_first(f"{body}.")
     if isinstance(clue, NegativeAssociation):
-        subject, pred_cat, pred_val = _subject_predicate_split(
-            theme, clue.category_a, clue.value_a, clue.category_b, clue.value_b
-        )
-        return _capitalize_first(f"{subject} is not {_subject(theme, pred_cat, pred_val)}.")
+        # NA falls back to the neutral "is not paired with" phrasing. A naive
+        # copula ("X is not Y") reads as a category error when one side is a
+        # location — "The Englishman is not the red house" suggests the person
+        # is not a building. Forming a proper negated predicate ("does not live
+        # in the red house") needs an extra `negative_predicate` field per
+        # category and tense-aware conjugation. NA isn't enumerated by the
+        # generator today, so neutral phrasing is the right minimum-cost
+        # default until a generated puzzle actually needs it.
+        a = _subject(theme, clue.category_a, clue.value_a)
+        b = _subject(theme, clue.category_b, clue.value_b)
+        return _capitalize_first(f"{a} is not paired with {b}.")
     if isinstance(clue, AbsolutePosition):
         subj = _subject(theme, clue.category, clue.value)
         return _capitalize_first(f"{subj} is in {theme.position_label} {clue.position + 1}.")
@@ -152,7 +159,7 @@ def render(clue: Clue, theme: Theme) -> str:
     if isinstance(clue, Disjunction):
         a = _subject(theme, clue.category_a, clue.value_a)
         opts = _join_options(theme, clue.options)
-        return _capitalize_first(f"{a} is paired with one of: {opts}.")
+        return _capitalize_first(f"{a} shares a {theme.position_label} with one of: {opts}.")
     if isinstance(clue, Conditional):
         if_body = _render_pa_body(
             theme,
