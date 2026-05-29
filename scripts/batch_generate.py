@@ -39,21 +39,25 @@ def run_batch(
     Returns a count-per-theme summary. A bad theme id raises
     `ThemeNotFoundError` from the loader rather than silently producing no
     output for that theme.
+
+    Each theme gets its own RNG stream keyed on `(seed, theme_id)`. That way
+    `--seed 0 --themes classic_houses` produces the same classic_houses puzzles
+    as `--seed 0 --themes restaurant,classic_houses` — re-running one theme
+    after a review cycle doesn't depend on the rest of the bank's theme list
+    staying frozen. When `seed` is None the streams are fresh on every run.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
-    rng = random.Random(seed)
     summary: dict[str, int] = {}
 
     for theme_id in themes:
         theme = load_theme(theme_id)
-        count = 0
+        theme_rng = random.Random(f"{seed}:{theme_id}") if seed is not None else random.Random()
         for _ in range(per_theme):
-            puzzle = generate(theme, rng=rng, n_restarts=restarts)
+            puzzle = generate(theme, rng=theme_rng, n_restarts=restarts)
             (output_dir / f"{puzzle.id}.json").write_text(
                 puzzle.model_dump_json(indent=2), encoding="utf-8"
             )
-            count += 1
-        summary[theme_id] = count
+        summary[theme_id] = per_theme
 
     return summary
 
