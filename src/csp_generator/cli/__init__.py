@@ -5,6 +5,7 @@ from __future__ import annotations
 import click
 
 from csp_generator import __version__
+from csp_generator.cli.export import export_cmd
 from csp_generator.cli.generate import generate_cmd
 from csp_generator.cli.review import review_cmd
 
@@ -17,12 +18,7 @@ def main() -> None:
 
 main.add_command(generate_cmd, name="generate")
 main.add_command(review_cmd, name="review")
-
-
-@main.command()
-def export() -> None:
-    """Export approved puzzles to JSON. (Coming soon.)"""
-    click.echo("export: not implemented yet")
+main.add_command(export_cmd, name="export")
 
 
 if __name__ == "__main__":
