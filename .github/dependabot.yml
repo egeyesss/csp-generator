@@ -7,6 +7,13 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    # ruff and mypy are pinned in both pyproject.toml and .pre-commit-config.yaml
+    # so the formatter the developer runs locally matches the one CI runs. A
+    # pip-only bump from Dependabot reintroduces the drift PR #16 fixed. Bump
+    # both pins together in a dedicated maintenance PR instead.
+    ignore:
+      - dependency-name: ruff
+      - dependency-name: mypy
 
   - package-ecosystem: github-actions
     directory: /
