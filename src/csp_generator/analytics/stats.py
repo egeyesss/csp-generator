@@ -22,13 +22,18 @@ from csp_generator.models import Puzzle
 
 
 class Summary(BaseModel):
-    """min/max/mean over a numeric field. `count` is how many values were seen."""
+    """min/max/mean over a numeric field. `count` is how many values were seen.
+
+    `min`/`max` preserve the source type — int in, int out — so an integer
+    field like clue_count renders as `7` rather than `7.0` downstream. `mean`
+    is always a float by definition.
+    """
 
     model_config = ConfigDict(frozen=True)
 
     count: int = Field(ge=0)
-    min: float | None = None
-    max: float | None = None
+    min: int | float | None = None
+    max: int | float | None = None
     mean: float | None = None
 
 
@@ -46,7 +51,7 @@ class BankStats(BaseModel):
 
 
 def _summarize(values: Iterable[float | int | None]) -> Summary:
-    present = [float(v) for v in values if v is not None]
+    present: list[int | float] = [v for v in values if v is not None]
     if not present:
         return Summary(count=0)
     return Summary(

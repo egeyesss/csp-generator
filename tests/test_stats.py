@@ -72,6 +72,20 @@ def test_compute_bank_stats_summary_ranges(bank_dir: Path, mixed_bank: list[Puzz
     )
 
 
+def test_summary_preserves_int_for_integer_inputs(bank_dir: Path, mixed_bank: list[Puzzle]) -> None:
+    """clue_count comes in as int — min/max should round-trip as int, not float.
+
+    Otherwise the CLI shows "7.0" where the user expects "7".
+    """
+    stats = compute_bank_stats(bank_dir)
+    assert isinstance(stats.clue_count.min, int)
+    assert isinstance(stats.clue_count.max, int)
+    assert isinstance(stats.deduction_depth.min, int)
+    assert isinstance(stats.deduction_depth.max, int)
+    # Composite difficulty is always a float by definition.
+    assert isinstance(stats.difficulty.min, float)
+
+
 def test_compute_bank_stats_ignores_review_sidecars(
     bank_dir: Path, mixed_bank: list[Puzzle]
 ) -> None:
@@ -123,3 +137,27 @@ def test_stats_cli_empty_dir(bank_dir: Path) -> None:
     result = runner.invoke(cli_main, ["stats", "--in", str(bank_dir)])
     assert result.exit_code == 0, result.output
     assert "0" in result.output
+
+
+def test_stats_cli_missing_dir_prints_clean_error(tmp_path: Path) -> None:
+    """Bad `--in` path produces a Click usage error, not a raw traceback."""
+    runner = CliRunner()
+    result = runner.invoke(cli_main, ["stats", "--in", str(tmp_path / "nope")])
+    assert result.exit_code != 0
+    assert "Traceback" not in result.output
+    assert "not found" in result.output.lower() or "error" in result.output.lower()
+
+
+def test_stats_cli_displays_integer_metrics_without_trailing_zero(
+    bank_dir: Path, mixed_bank: list[Puzzle]
+) -> None:
+    """clue_count min/max display as `7`, not `7.0`."""
+    runner = CliRunner()
+    result = runner.invoke(cli_main, ["stats", "--in", str(bank_dir)])
+    assert result.exit_code == 0, result.output
+    # No "<int>.0" should appear in the table rows. We assert on a specific
+    # known-int value to keep the test robust against table formatting changes.
+    stats = compute_bank_stats(bank_dir)
+    min_clue = stats.clue_count.min
+    assert min_clue is not None
+    assert f"{int(min_clue)}.0" not in result.output

@@ -52,12 +52,15 @@ def export_cmd(
     in_path = Path(input_dir)
     out_path = Path(output_path)
 
-    bundle = build_bundle_from_directory(
-        in_path,
-        theme_filter=theme or None,
-        size_filter=size or None,
-        source=str(in_path),
-    )
+    try:
+        bundle = build_bundle_from_directory(
+            in_path,
+            theme_filter=theme or None,
+            size_filter=size or None,
+            source=str(in_path),
+        )
+    except FileNotFoundError as exc:
+        raise click.ClickException(str(exc)) from exc
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(bundle.model_dump_json(indent=2), encoding="utf-8")

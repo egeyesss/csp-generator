@@ -14,6 +14,10 @@ from rich.table import Table
 
 from csp_generator.analytics.stats import BankStats, Summary, compute_bank_stats
 
+# Pydantic's int|float union deserializes ints losslessly; min/max can therefore
+# be either type in memory. _fmt branches on that to render whole-number stats
+# without a trailing ".0" — e.g. clue_count min as "7", not "7.0".
+
 
 def _fmt(value: float | int | None, *, digits: int = 2) -> str:
     if value is None:
@@ -74,6 +78,9 @@ def _render(stats: BankStats, console: Console) -> None:
 )
 def stats_cmd(input_dir: str) -> None:
     """Summarize a directory of puzzles (counts per theme/size + metric ranges)."""
-    stats = compute_bank_stats(Path(input_dir))
+    try:
+        stats = compute_bank_stats(Path(input_dir))
+    except FileNotFoundError as exc:
+        raise click.ClickException(str(exc)) from exc
     console = Console()
     _render(stats, console)

@@ -196,3 +196,16 @@ def test_export_cli_creates_output_parent(
     )
     assert result.exit_code == 0, result.output
     assert out.is_file()
+
+
+def test_export_cli_missing_dir_prints_clean_error(tmp_path: Path) -> None:
+    """Bad `--in` path produces a Click usage error, not a raw traceback."""
+    out = tmp_path / "out.json"
+    runner = CliRunner()
+    result = runner.invoke(
+        cli_main,
+        ["export", "--in", str(tmp_path / "nope"), "--out", str(out)],
+    )
+    assert result.exit_code != 0
+    assert "Traceback" not in result.output
+    assert "not found" in result.output.lower() or "error" in result.output.lower()
