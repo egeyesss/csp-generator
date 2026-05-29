@@ -123,7 +123,7 @@ tests/                     # pytest + Hypothesis property tests
 output/                    # candidates / approved / rejected / exports
 ```
 
-## Architecture in one paragraph
+## How it works
 
 A theme defines categories and value pools. The generator picks a random valid solution, enumerates every clue true under that solution across seven clue types (PositiveAssociation, NegativeAssociation, AbsolutePosition, Adjacency, RelativePosition, ImmediateLeftOf, plus Disjunction/Conditional stubbed), then greedily reduces the pool down to a near-minimum subset that still solves uniquely under OR-Tools. Before greedy reduction, a sequence of "cap" passes shapes the clue-type distribution toward Einstein's ratios. The custom propagation tracer walks the surviving clue set wave-by-wave to compute deduction depth, branching factor, and composite difficulty. The output is a JSON puzzle plus a metrics blob, ready for human review.
 
