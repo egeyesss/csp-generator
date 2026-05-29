@@ -10,11 +10,20 @@ question_target:
   - major
   - cs
 descriptors:
-  name: "{value}"
-  major: "the {value} major"
-  sport: "the {value} player"
-  snack: "the {value} hoarder"
-  music: "the {value} fan"
+  name:
+    subject: "{value}"
+  major:
+    subject: "the {value} major"
+    predicate: "majors in {value}"
+  sport:
+    subject: "the {value} player"
+    predicate: "plays {value}"
+  snack:
+    subject: "the {value} hoarder"
+    predicate: "stashes {value}"
+  music:
+    subject: "the {value} fan"
+    predicate: "listens to {value}"
 attributes:
   name:
     - Maya

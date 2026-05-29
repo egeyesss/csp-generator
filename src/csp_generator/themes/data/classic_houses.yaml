@@ -9,11 +9,21 @@ question_target:
   - pet
   - zebra
 descriptors:
-  color: "the {value} house"
-  nationality: "the {value}"
-  drink: "the {value} drinker"
-  pet: "the {value} owner"
-  cigarette: "the {value} smoker"
+  color:
+    subject: "the {value} house"
+    predicate: "lives in the {value} house"
+    is_location: true
+  nationality:
+    subject: "the {value}"
+  drink:
+    subject: "the {value} drinker"
+    predicate: "drinks {value}"
+  pet:
+    subject: "the {value} owner"
+    predicate: "owns the {value}"
+  cigarette:
+    subject: "the {value} smoker"
+    predicate: "smokes {value}"
 attributes:
   color:
     - red

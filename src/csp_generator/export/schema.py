@@ -28,7 +28,7 @@ from csp_generator.models import (
     Theme,
 )
 
-EXPORT_SCHEMA_VERSION = "1.0.0"
+EXPORT_SCHEMA_VERSION = "1.0.1"
 
 
 class ExportedClue(BaseModel):

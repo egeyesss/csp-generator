@@ -60,26 +60,24 @@ Sample output (seed 7):
 17 clues, difficulty 4.5/10
 Question: who owns the zebra?
 
- 1. The tea drinker is adjacent to the dog owner.
- 2. The red house is adjacent to the Spaniard.
- 3. The tea drinker is adjacent to the Spaniard.
- 4. The Ukrainian is adjacent to the Norwegian.
- 5. The fox owner is at position 2.
- 6. The snails owner is at position 1.
+ 1. The tea drinker is next to the dog owner.
+ 2. The red house is next to the Spaniard.
+ 3. The tea drinker is next to the Spaniard.
+ 4. The Ukrainian is next to the Norwegian.
+ 5. The fox owner is in house 2.
+ 6. The snails owner is in house 1.
  7. The Japanese is directly to the left of the horse owner.
- 8. The Chesterfields smoker is paired with the milk drinker.
- 9. The water drinker is paired with the Englishman.
-10. The tea drinker is paired with the Japanese.
-11. The Old Gold smoker is paired with the water drinker.
-12. The Parliaments smoker is paired with the coffee drinker.
-13. The yellow house is paired with the Spaniard.
-14. The Kools smoker is paired with the Ukrainian.
-15. The Chesterfields smoker is paired with the red house.
-16. The Kools smoker is paired with the blue house.
-17. The green house is paired with the tea drinker.
+ 8. The milk drinker smokes Chesterfields.
+ 9. The Englishman drinks water.
+10. The Japanese drinks tea.
+11. The water drinker smokes Old Gold.
+12. The coffee drinker smokes Parliaments.
+13. The Spaniard lives in the yellow house.
+14. The Ukrainian smokes Kools.
+15. The Chesterfields smoker lives in the red house.
+16. The Kools smoker lives in the blue house.
+17. The tea drinker lives in the green house.
 ```
-
-I am aware that the language here does not sound natural and it will be fixed soon. "The Chesterfields smoker is paired with the red house." --> "The Chesterfields smoker lives in the red house."
 
 Note that "zebra" never appears in the clues — the answer falls out by elimination over the four named pets. That's the original Einstein flavor.
 
