@@ -83,12 +83,29 @@ I am aware that the language here does not sound natural and it will be fixed so
 
 Note that "zebra" never appears in the clues — the answer falls out by elimination over the four named pets. That's the original Einstein flavor.
 
-The CLI also supports interactive review:
+## Curating a puzzle bank
+
+The end-to-end workflow for producing a launch-ready set of puzzles:
 
 ```bash
-csp-generator review              # walk output/candidates/, prompt verdict on each
-csp-generator export --out v1.json   # bundle approved puzzles for downstream use
+# 1. Batch-generate candidates across every theme (50 each by default).
+python -m scripts.batch_generate --per-theme 50
+
+# 2. Review the candidates one at a time. Each verdict gets recorded as a
+#    sibling `<id>.review.json`; approved/rejected puzzles move to the
+#    matching output dir.
+csp-generator review
+
+# 3. Inspect the shape of the approved bank — counts per theme/size,
+#    distribution of difficulty/clue count/deduction depth.
+csp-generator stats --in output/approved
+
+# 4. Bundle the approved set into a versioned JSON for downstream consumers
+#    (e.g. a web app that ships one puzzle per day).
+csp-generator export --in output/approved --out output/exports/v1.json
 ```
+
+The bundle that lands in `output/exports/v1.json` is the contract with anything downstream — see [`src/csp_generator/export/schema.py`](src/csp_generator/export/schema.py) for the schema. Each puzzle in the bundle carries its theme inline (so the consumer needs nothing from this repo), the full solution, each clue's structured form plus its rendered English text, the question target, generation metrics, and the human review record.
 
 ## Project layout
 
@@ -99,10 +116,11 @@ src/csp_generator/
 ├── solver/                # OR-Tools wrapper + custom propagation tracer
 ├── clues/                 # Clue types, propagation rules, NL templates, enumeration
 ├── generator/             # Random solution generation + minimum-clue-set selection
-├── analytics/             # Difficulty score, variety score, reference puzzle bank
-├── export/                # JSON export
-└── cli/                   # generate / review / export commands
+├── analytics/             # Difficulty score, variety score, bank stats, reference puzzles
+├── export/                # Versioned JSON export schema + bundle builder
+└── cli/                   # generate / review / export / stats commands
 
+scripts/                   # Standalone launch-prep tools (batch_generate.py)
 tests/                     # pytest + Hypothesis property tests
 output/                    # candidates / approved / rejected / exports
 ```
@@ -127,10 +145,10 @@ For smaller starter tasks, check the [good first issue](https://github.com/egeye
 
 ```bash
 ruff check . && ruff format .
-mypy src
-pytest                         # full suite, ~4 min
-pytest tests/test_selection_quality.py    # the slower invariant tests
-pytest --cov=csp_generator     # with coverage
+mypy src scripts
+pytest                                     # full suite, ~5 min
+pytest tests/test_selection_quality.py     # the slower invariant tests
+pytest --cov=csp_generator --cov-report=term-missing
 ```
 
 Pre-commit hooks (ruff, ruff-format, mypy, basic hygiene) run on every commit. CI runs the same checks on every PR.
