@@ -121,6 +121,84 @@ def test_run_batch_per_theme_output_independent_of_theme_list(tmp_path: Path) ->
     assert alone_puzzle.clues == classic_after.clues
 
 
+def test_run_batch_forwards_min_difficulty(output_dir: Path, monkeypatch) -> None:
+    """`min_difficulty` is passed straight through to the pipeline.
+
+    The pipeline's own tests cover what the floor *does* (retry until a puzzle
+    clears it); here we only need to confirm the batch wrapper forwards the
+    value rather than swallowing it, so a spy on `generate` is the honest check.
+    """
+    captured: list[float | None] = []
+
+    import scripts.batch_generate as bg
+
+    real_generate = bg.generate
+
+    def spy(theme, **kwargs):
+        captured.append(kwargs.get("min_difficulty"))
+        return real_generate(theme, **kwargs)
+
+    monkeypatch.setattr(bg, "generate", spy)
+
+    run_batch(
+        themes=["restaurant"],
+        per_theme=1,
+        output_dir=output_dir,
+        seed=0,
+        restarts=1,
+        min_difficulty=4.5,
+    )
+    assert captured == [4.5]
+
+
+def test_run_batch_min_difficulty_defaults_to_none(output_dir: Path, monkeypatch) -> None:
+    """Omitting the floor leaves it None so the pipeline's size-based default applies."""
+    captured: list[float | None] = []
+
+    import scripts.batch_generate as bg
+
+    real_generate = bg.generate
+
+    def spy(theme, **kwargs):
+        captured.append(kwargs.get("min_difficulty"))
+        return real_generate(theme, **kwargs)
+
+    monkeypatch.setattr(bg, "generate", spy)
+
+    run_batch(
+        themes=["restaurant"],
+        per_theme=1,
+        output_dir=output_dir,
+        seed=0,
+        restarts=1,
+    )
+    assert captured == [None]
+
+
+def test_cli_accepts_min_difficulty(output_dir: Path) -> None:
+    """The --min-difficulty option is wired up and the run still succeeds."""
+    runner = CliRunner()
+    result = runner.invoke(
+        main,
+        [
+            "--themes",
+            "restaurant",
+            "--per-theme",
+            "1",
+            "--output-dir",
+            str(output_dir),
+            "--seed",
+            "0",
+            "--restarts",
+            "1",
+            "--min-difficulty",
+            "4.5",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert len(list(output_dir.glob("*.json"))) == 1
+
+
 def test_cli_runs_end_to_end(output_dir: Path) -> None:
     """Click entry point produces files and exits 0."""
     runner = CliRunner()
