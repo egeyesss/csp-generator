@@ -86,9 +86,9 @@ def test_pa_destacking_works_on_dorm_too(dorm: Theme, seed: int) -> None:
 
 def _clue_mentions(clue, category: str, value: str) -> bool:
     """True iff `(category, value)` shows up textually in the clue."""
-    from csp_generator.generator.selection import _references  # tested separately
+    from csp_generator.generator.selection import clue_references  # tested separately
 
-    return _references(clue, category, value)
+    return clue_references(clue, category, value)
 
 
 @pytest.mark.parametrize("seed", [0, 1, 7, 42])
@@ -118,6 +118,52 @@ def test_answer_grounded_in_restaurant_theme(seed: int) -> None:
     answer_name = puzzle.solution.value_at("name", answer_pos)
     grounded = any(_clue_mentions(c, "name", answer_name) for c in puzzle.clues)
     assert grounded, f"restaurant seed={seed}: {answer_name!r} never mentioned"
+
+
+# ---------------------------------------------------------------------------
+# Answer visibility — size-dependent
+#
+# 5x5 keeps the original Einstein flavor: the answer value (zebra/ceo/cs) never
+# appears in any clue, so it's reached purely by elimination. 4x4 is looser —
+# the answer may surface — but even then it's never pinned by an
+# AbsolutePosition giveaway ("tiramisu is in booth 3"); any appearance has to be
+# relational so it still takes reasoning.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("theme_id", ["office", "dorm", "classic_houses"])
+@pytest.mark.parametrize("seed", [0, 1, 7, 42])
+def test_answer_value_never_appears_in_5x5(theme_id: str, seed: int) -> None:
+    """5x5 hides the answer like the zebra — it shows up in no clue at all."""
+    theme = load_theme(theme_id)
+    assert theme.size >= 5, f"{theme_id} is no longer 5x5+; this test guards the 5x5 rule"
+    puzzle = generate(theme, rng=random.Random(seed), n_restarts=3)
+    assert puzzle.question is not None
+    qt_cat, qt_val = puzzle.question
+    leaking = [c for c in puzzle.clues if _clue_mentions(c, qt_cat, qt_val)]
+    assert not leaking, (
+        f"{theme_id} seed={seed}: answer value {qt_cat}={qt_val!r} leaks into "
+        f"{[c.type for c in leaking]} — 5x5 must hide it like the zebra"
+    )
+
+
+@pytest.mark.parametrize("seed", [0, 1, 7, 42])
+def test_answer_value_not_pinned_by_abspos_4x4(seed: int) -> None:
+    """4x4 may name the answer, but never via an AbsolutePosition giveaway."""
+    theme = load_theme("restaurant")
+    assert theme.size == 4, "restaurant is no longer 4x4; this test guards the 4x4 rule"
+    puzzle = generate(theme, rng=random.Random(seed), n_restarts=3)
+    assert puzzle.question is not None
+    qt_cat, qt_val = puzzle.question
+    pinned = [
+        c
+        for c in puzzle.clues
+        if isinstance(c, AbsolutePosition) and (c.category, c.value) == (qt_cat, qt_val)
+    ]
+    assert not pinned, (
+        f"restaurant seed={seed}: answer value {qt_cat}={qt_val!r} is pinned by an "
+        f"AbsolutePosition clue — it must be relational if it appears at all"
+    )
 
 
 # ---------------------------------------------------------------------------

@@ -7,6 +7,7 @@ deliberate — we want to catch real solver regressions, not hide behind mocks.
 
 from __future__ import annotations
 
+import logging
 import random
 
 import pytest
@@ -217,17 +218,23 @@ def test_generate_respects_difficulty_floor(classic: Theme) -> None:
     assert puzzle.metrics.composite_difficulty >= 3.0
 
 
-def test_generate_returns_best_effort_when_floor_unreachable(classic: Theme) -> None:
-    """When the floor can't be cleared in max_retries, return the best attempt."""
+def test_generate_returns_best_effort_when_floor_unreachable(
+    classic: Theme, caplog: pytest.LogCaptureFixture
+) -> None:
+    """When the floor can't be cleared in max_retries, return the best attempt and warn."""
     # 9.5 is well above what 5x5 puzzles land at on this theme; the loop will
     # exhaust max_retries and return the highest-difficulty attempt without
-    # crashing.
-    puzzle = generate(
-        classic, rng=random.Random(0), n_restarts=1, min_difficulty=9.5, max_retries=2
-    )
+    # crashing — but it must say so, not fall back silently below threshold.
+    with caplog.at_level(logging.WARNING, logger="csp_generator.generator.pipeline"):
+        puzzle = generate(
+            classic, rng=random.Random(0), n_restarts=1, min_difficulty=9.5, max_retries=2
+        )
     assert puzzle.metrics is not None
     assert puzzle.metrics.composite_difficulty is not None
     assert puzzle.solution is not None
+    assert any(
+        "difficulty floor" in r.message for r in caplog.records
+    ), "an unreachable floor should log a warning so the fallback is visible"
 
 
 def test_generate_default_has_no_floor(classic: Theme) -> None:

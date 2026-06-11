@@ -33,6 +33,7 @@ def run_batch(
     output_dir: Path,
     seed: int | None,
     restarts: int,
+    min_difficulty: float | None = None,
 ) -> dict[str, int]:
     """Generate `per_theme` candidates for each theme; write them under `output_dir`.
 
@@ -45,6 +46,11 @@ def run_batch(
     as `--seed 0 --themes restaurant,classic_houses` — re-running one theme
     after a review cycle doesn't depend on the rest of the bank's theme list
     staying frozen. When `seed` is None the streams are fresh on every run.
+
+    `min_difficulty` is forwarded to the pipeline's retry loop; leaving it None
+    lets the pipeline apply its own size-based floor. Set it to lift candidates
+    above the reviewer's SKIP threshold (4x4 wants ~4.5, 5x5 ~5.0) instead of
+    leaning on the default 4x4 floor of 3.5.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
     summary: dict[str, int] = {}
@@ -53,7 +59,9 @@ def run_batch(
         theme = load_theme(theme_id)
         theme_rng = random.Random(f"{seed}:{theme_id}") if seed is not None else random.Random()
         for _ in range(per_theme):
-            puzzle = generate(theme, rng=theme_rng, n_restarts=restarts)
+            puzzle = generate(
+                theme, rng=theme_rng, n_restarts=restarts, min_difficulty=min_difficulty
+            )
             (output_dir / f"{puzzle.id}.json").write_text(
                 puzzle.model_dump_json(indent=2), encoding="utf-8"
             )
@@ -101,12 +109,20 @@ def _parse_themes(value: str | None) -> list[str]:
     type=click.IntRange(min=1),
     help="Greedy-reduction restart count passed through to the pipeline.",
 )
+@click.option(
+    "--min-difficulty",
+    default=None,
+    type=click.FloatRange(min=0.0, max=10.0),
+    help="Composite-difficulty floor; the pipeline retries until a candidate clears it. "
+    "Omit to use the size-based default (3.5 for 4x4, none for 5x5).",
+)
 def main(
     themes_csv: str | None,
     per_theme: int,
     output_dir: str,
     seed: int | None,
     restarts: int,
+    min_difficulty: float | None,
 ) -> None:
     """Generate a batch of candidate puzzles for the launch bank."""
     themes = _parse_themes(themes_csv)
@@ -119,6 +135,7 @@ def main(
         output_dir=out,
         seed=seed,
         restarts=restarts,
+        min_difficulty=min_difficulty,
     )
 
     total = sum(summary.values())
