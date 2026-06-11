@@ -79,7 +79,7 @@ def _greedy_reduce(
     current = _priority_shuffle(pool, rng)
     for clue in list(current):
         candidate = [c for c in current if c is not clue]
-        if protect_ref is not None and not any(_references(c, *protect_ref) for c in candidate):
+        if protect_ref is not None and not any(clue_references(c, *protect_ref) for c in candidate):
             continue
         probe = Puzzle(
             id="__probe__",
@@ -153,7 +153,9 @@ def _cap_clue_count(
         removed = False
         for clue in ordered:
             candidate = [c for c in current if c is not clue]
-            if protect_ref is not None and not any(_references(c, *protect_ref) for c in candidate):
+            if protect_ref is not None and not any(
+                clue_references(c, *protect_ref) for c in candidate
+            ):
                 continue
             probe = Puzzle(
                 id="__probe__",
@@ -197,7 +199,9 @@ def _destack_pa(
         removed = False
         for clue in targets:
             candidate = [c for c in current if c is not clue]
-            if protect_ref is not None and not any(_references(c, *protect_ref) for c in candidate):
+            if protect_ref is not None and not any(
+                clue_references(c, *protect_ref) for c in candidate
+            ):
                 continue
             probe = Puzzle(
                 id="__probe__",
@@ -293,11 +297,12 @@ def select_minimum_clues(
 
 
 # ---------------------------------------------------------------------------
-# Reference probe (used by the answer-grounding rule and quality tests)
+# Reference probe — part of the module's public contract: the pipeline shares
+# it to enforce answer suppression, and the quality tests use it directly.
 # ---------------------------------------------------------------------------
 
 
-def _references(clue: Clue, category: str, value: str) -> bool:
+def clue_references(clue: Clue, category: str, value: str) -> bool:
     """True if `(category, value)` appears anywhere in the clue's fields."""
     target = (category, value)
     if isinstance(
@@ -319,4 +324,4 @@ def _references(clue: Clue, category: str, value: str) -> bool:
     return False
 
 
-__all__ = ["select_minimum_clues"]
+__all__ = ["clue_references", "select_minimum_clues"]

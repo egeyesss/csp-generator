@@ -86,9 +86,9 @@ def test_pa_destacking_works_on_dorm_too(dorm: Theme, seed: int) -> None:
 
 def _clue_mentions(clue, category: str, value: str) -> bool:
     """True iff `(category, value)` shows up textually in the clue."""
-    from csp_generator.generator.selection import _references  # tested separately
+    from csp_generator.generator.selection import clue_references  # tested separately
 
-    return _references(clue, category, value)
+    return clue_references(clue, category, value)
 
 
 @pytest.mark.parametrize("seed", [0, 1, 7, 42])
@@ -136,6 +136,7 @@ def test_answer_grounded_in_restaurant_theme(seed: int) -> None:
 def test_answer_value_never_appears_in_5x5(theme_id: str, seed: int) -> None:
     """5x5 hides the answer like the zebra — it shows up in no clue at all."""
     theme = load_theme(theme_id)
+    assert theme.size >= 5, f"{theme_id} is no longer 5x5+; this test guards the 5x5 rule"
     puzzle = generate(theme, rng=random.Random(seed), n_restarts=3)
     assert puzzle.question is not None
     qt_cat, qt_val = puzzle.question
@@ -149,7 +150,9 @@ def test_answer_value_never_appears_in_5x5(theme_id: str, seed: int) -> None:
 @pytest.mark.parametrize("seed", [0, 1, 7, 42])
 def test_answer_value_not_pinned_by_abspos_4x4(seed: int) -> None:
     """4x4 may name the answer, but never via an AbsolutePosition giveaway."""
-    puzzle = generate(load_theme("restaurant"), rng=random.Random(seed), n_restarts=3)
+    theme = load_theme("restaurant")
+    assert theme.size == 4, "restaurant is no longer 4x4; this test guards the 4x4 rule"
+    puzzle = generate(theme, rng=random.Random(seed), n_restarts=3)
     assert puzzle.question is not None
     qt_cat, qt_val = puzzle.question
     pinned = [

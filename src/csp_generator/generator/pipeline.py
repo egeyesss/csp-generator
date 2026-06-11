@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 import random
 import uuid
 
 from csp_generator.analytics.difficulty import composite_difficulty
 from csp_generator.analytics.variety import clue_variety
 from csp_generator.clues.enumerator import enumerate_valid_clues
-from csp_generator.generator.selection import _references, select_minimum_clues
+from csp_generator.generator.selection import clue_references, select_minimum_clues
 from csp_generator.generator.solution import generate_solution
 from csp_generator.models import (
     AbsolutePosition,
@@ -20,6 +21,8 @@ from csp_generator.models import (
     Theme,
 )
 from csp_generator.solver.propagator import trace
+
+logger = logging.getLogger(__name__)
 
 # Size-based difficulty floors applied when the caller does not pass an
 # explicit min_difficulty. 4x4 puzzles without a floor collapse onto a
@@ -95,6 +98,17 @@ def generate(
             best = puzzle
     # `best` is non-None: attempts >= 1 above guarantees at least one iteration.
     assert best is not None
+    # Floor was never cleared. Warn so callers (e.g. the batch script) can tell a
+    # fallback puzzle apart from one that actually met the request, instead of it
+    # landing in the output silently below threshold.
+    logger.warning(
+        "theme %r: difficulty floor %.2f not reached in %d attempts; "
+        "returning best attempt at %.2f",
+        theme.id,
+        min_difficulty,
+        attempts,
+        _difficulty(best),
+    )
     return best
 
 
@@ -109,11 +123,14 @@ def _generate_once(theme: Theme, rng: random.Random, n_restarts: int) -> Puzzle:
     qt = theme.question_target
     solution = generate_solution(theme, rng)
 
-    # How the answer value is allowed to surface depends on grid size:
+    # A direct PA pairing the answer ("Ana got tiramisu") is always dropped on
+    # both sizes — that's the long-standing question_target suppression, not new
+    # here. On top of that, how the answer value may otherwise surface depends on
+    # grid size:
     #   - 5x5+ (Einstein flavor): the answer value never appears in any clue, so
     #     the player deduces it purely by elimination — exactly like the zebra.
-    #   - 4x4: the answer may or may not appear, but it's never pinned outright
-    #     by an AbsolutePosition giveaway; any appearance must be relational.
+    #   - 4x4: the answer may surface in a relational clue, but it's never pinned
+    #     by an AbsolutePosition giveaway ("tiramisu is in booth 3").
     suppress_answer = qt is not None and theme.size >= 5
 
     def _keep(clue: Clue) -> bool:
@@ -124,7 +141,7 @@ def _generate_once(theme: Theme, rng: random.Random, n_restarts: int) -> Puzzle:
         if _is_direct_answer(clue, qt):
             return False
         if suppress_answer:
-            return not _references(clue, *qt)
+            return not clue_references(clue, *qt)
         return not _pins_answer_position(clue, qt)
 
     pool: list[Clue] = [c for c in enumerate_valid_clues(solution, theme) if _keep(c)]
